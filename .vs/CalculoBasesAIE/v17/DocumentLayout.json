@@ -57,7 +57,7 @@
               "RelativeDocumentMoniker": "Controllers\\BaseHormigonController.cs",
               "ToolTip": "C:\\Users\\dario\\OneDrive\\Documentos\\Dario\\Dev\\CalculoBasesAIE\\Controllers\\BaseHormigonController.cs",
               "RelativeToolTip": "Controllers\\BaseHormigonController.cs",
-              "ViewState": "AgIAAGwAAAAAAAAAAAAEwEkAAAAMAAAAAAAAAA==",
+              "ViewState": "AgIAAMAAAAAAAAAAAAAkwAkAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-11T23:06:00.332Z",
               "EditorCaption": ""
@@ -72,8 +72,7 @@
               "RelativeToolTip": "Models\\BaseHormigonContext.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAuwAkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-11T23:04:11.554Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-11T23:04:11.554Z"
             },
             {
               "$type": "Document",
@@ -85,8 +84,7 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-11T23:04:29.277Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-11T23:04:29.277Z"
             }
           ]
         },

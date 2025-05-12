@@ -7,24 +7,12 @@
       "RelativeMoniker": "D:0:0:{6FDFC766-04E9-45C2-AAB9-0EE17F5F42E6}|CalculoBasesAIE.csproj|solutionrelative:controllers\\basehormigoncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6FDFC766-04E9-45C2-AAB9-0EE17F5F42E6}|CalculoBasesAIE.csproj|c:\\users\\dario\\onedrive\\documentos\\dario\\dev\\calculobasesaie\\models\\basehormigonarmadura.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6FDFC766-04E9-45C2-AAB9-0EE17F5F42E6}|CalculoBasesAIE.csproj|solutionrelative:models\\basehormigonarmadura.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{6FDFC766-04E9-45C2-AAB9-0EE17F5F42E6}|CalculoBasesAIE.csproj|c:\\users\\dario\\onedrive\\documentos\\dario\\dev\\calculobasesaie\\calculobasesaie.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
       "RelativeMoniker": "D:0:0:{6FDFC766-04E9-45C2-AAB9-0EE17F5F42E6}|CalculoBasesAIE.csproj|solutionrelative:calculobasesaie.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6FDFC766-04E9-45C2-AAB9-0EE17F5F42E6}|CalculoBasesAIE.csproj|c:\\users\\dario\\onedrive\\documentos\\dario\\dev\\calculobasesaie\\models\\basehormigon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6FDFC766-04E9-45C2-AAB9-0EE17F5F42E6}|CalculoBasesAIE.csproj|solutionrelative:models\\basehormigon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{6FDFC766-04E9-45C2-AAB9-0EE17F5F42E6}|CalculoBasesAIE.csproj|c:\\users\\dario\\onedrive\\documentos\\dario\\dev\\calculobasesaie\\models\\basehormigoncontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6FDFC766-04E9-45C2-AAB9-0EE17F5F42E6}|CalculoBasesAIE.csproj|solutionrelative:models\\basehormigoncontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6FDFC766-04E9-45C2-AAB9-0EE17F5F42E6}|CalculoBasesAIE.csproj|c:\\users\\dario\\onedrive\\documentos\\dario\\dev\\calculobasesaie\\models\\basehormigondimensiones.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6FDFC766-04E9-45C2-AAB9-0EE17F5F42E6}|CalculoBasesAIE.csproj|solutionrelative:models\\basehormigondimensiones.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6FDFC766-04E9-45C2-AAB9-0EE17F5F42E6}|CalculoBasesAIE.csproj|c:\\users\\dario\\onedrive\\documentos\\dario\\dev\\calculobasesaie\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -50,7 +38,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "CalculoBasesAIE.http",
               "DocumentMoniker": "C:\\Users\\dario\\OneDrive\\Documentos\\Dario\\Dev\\CalculoBasesAIE\\CalculoBasesAIE.http",
               "RelativeDocumentMoniker": "CalculoBasesAIE.http",
@@ -58,8 +46,7 @@
               "RelativeToolTip": "CalculoBasesAIE.http",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
-              "WhenOpened": "2025-05-12T00:13:39.839Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-12T00:13:39.839Z"
             },
             {
               "$type": "Document",
@@ -69,14 +56,14 @@
               "RelativeDocumentMoniker": "Controllers\\BaseHormigonController.cs",
               "ToolTip": "C:\\Users\\dario\\OneDrive\\Documentos\\Dario\\Dev\\CalculoBasesAIE\\Controllers\\BaseHormigonController.cs",
               "RelativeToolTip": "Controllers\\BaseHormigonController.cs",
-              "ViewState": "AgIAAJwAAAAAAAAAAAAAAL8AAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAMYAAAAAAAAAAAAIwG8AAABkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-11T23:06:00.332Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "BaseHormigonContext.cs",
               "DocumentMoniker": "C:\\Users\\dario\\OneDrive\\Documentos\\Dario\\Dev\\CalculoBasesAIE\\Models\\BaseHormigonContext.cs",
               "RelativeDocumentMoniker": "Models\\BaseHormigonContext.cs",
@@ -84,12 +71,11 @@
               "RelativeToolTip": "Models\\BaseHormigonContext.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAuwAkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-11T23:04:11.554Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-11T23:04:11.554Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 3,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\dario\\OneDrive\\Documentos\\Dario\\Dev\\CalculoBasesAIE\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -97,57 +83,21 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-11T23:04:29.277Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-11T23:04:29.277Z"
             }
           ]
         },
         {
           "DockedWidth": 757,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "BaseHormigon.cs",
-              "DocumentMoniker": "C:\\Users\\dario\\OneDrive\\Documentos\\Dario\\Dev\\CalculoBasesAIE\\Models\\BaseHormigon.cs",
-              "RelativeDocumentMoniker": "Models\\BaseHormigon.cs",
-              "ToolTip": "C:\\Users\\dario\\OneDrive\\Documentos\\Dario\\Dev\\CalculoBasesAIE\\Models\\BaseHormigon.cs",
-              "RelativeToolTip": "Models\\BaseHormigon.cs",
-              "ViewState": "AgIAAAQAAAAAAAAAAAAiwA0AAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-11T23:03:40.858Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "BaseHormigonArmadura.cs",
-              "DocumentMoniker": "C:\\Users\\dario\\OneDrive\\Documentos\\Dario\\Dev\\CalculoBasesAIE\\Models\\BaseHormigonArmadura.cs",
-              "RelativeDocumentMoniker": "Models\\BaseHormigonArmadura.cs",
-              "ToolTip": "C:\\Users\\dario\\OneDrive\\Documentos\\Dario\\Dev\\CalculoBasesAIE\\Models\\BaseHormigonArmadura.cs",
-              "RelativeToolTip": "Models\\BaseHormigonArmadura.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-12T02:14:56.035Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "BaseHormigonDimensiones.cs",
-              "DocumentMoniker": "C:\\Users\\dario\\OneDrive\\Documentos\\Dario\\Dev\\CalculoBasesAIE\\Models\\BaseHormigonDimensiones.cs",
-              "RelativeDocumentMoniker": "Models\\BaseHormigonDimensiones.cs",
-              "ToolTip": "C:\\Users\\dario\\OneDrive\\Documentos\\Dario\\Dev\\CalculoBasesAIE\\Models\\BaseHormigonDimensiones.cs",
-              "RelativeToolTip": "Models\\BaseHormigonDimensiones.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAArAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-11T23:54:28.366Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:1924764005:0:{13143d73-808b-4a2f-bebb-ccbe9c93fe37}"
             }
           ]
         }
