@@ -1,0 +1,23 @@
+@CalculoBasesAIE_HostAddress = https://localhost:7129
+
+POST {{CalculoBasesAIE_HostAddress}}/api/baseshormigon
+Content-Type: application/json
+
+{
+"id": 1,
+"esfuerzoAxil": 1000,
+"porcentajeCargaD": 0.7,
+"porcentajeCargaL": 0.3,
+"anchoColumnaX": 0.4,
+"anchoColumnaY": 0.25,
+"cargaAdmisible": 170,
+"pesoEspecificoSuelo": 17,
+"nivelFundacion": 2.5,
+"factorSeguridad": 3,
+"pesoEspecificoHormigon": 24,
+"resistenciaCaracteristicaHormigon": 25,
+"recubrimientoHormigon": 0.05,
+"tensionFluenciaAcero": 420
+}
+
+###
