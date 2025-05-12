@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CalculoBasesAIE")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+61e1527c05ede26157371c4407fc60324dda72bf")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2c7c263f1d5c1810123889d12c183dc3f1dc99c1")]
 [assembly: System.Reflection.AssemblyProductAttribute("CalculoBasesAIE")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CalculoBasesAIE")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

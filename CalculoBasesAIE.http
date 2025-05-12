@@ -4,7 +4,7 @@ POST {{CalculoBasesAIE_HostAddress}}/api/baseshormigon
 Content-Type: application/json
 
 {
-"id": 1,
+"id": 2,
 "esfuerzoAxil": 1000,
 "porcentajeCargaD": 0.7,
 "porcentajeCargaL": 0.3,
@@ -19,5 +19,12 @@ Content-Type: application/json
 "recubrimientoHormigon": 0.05,
 "tensionFluenciaAcero": 420
 }
+
+###
+
+
+
+
+GET {{CalculoBasesAIE_HostAddress}}/api/baseshormigon
 
 ###
