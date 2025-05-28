@@ -31,6 +31,41 @@ namespace CalculoBasesAIE.Controllers
             return baseHormigon;
         }
 
+        // Get estimated dimensions
+        [HttpGet("{id}/dimensionesBase")]
+        public async Task<ActionResult<BaseHormigonDimensiones>> GetDimensionesBase(long id)
+        {
+            var baseHormigon = await _context.BasesHormigon.FindAsync(id);
+            if (baseHormigon == null) return NotFound();
+
+            var dimensionesBase = EstimarDimensiones(baseHormigon);
+            return Ok(dimensionesBase);
+        }
+
+        // Get tension verification
+        [HttpGet("{id}/verificaTensionAdmisible")]
+        public async Task<ActionResult<bool>> GetVerificaTensionAdmisible(long id)
+        {
+            var baseHormigon = await _context.BasesHormigon.FindAsync(id);
+            if (baseHormigon == null) return NotFound();
+
+            var dimensionesBase = EstimarDimensiones(baseHormigon);
+            var verificaTension = VerificarTension(baseHormigon, dimensionesBase);
+            return Ok(verificaTension);
+        }
+
+        // Get reinforcement calculations
+        [HttpGet("{id}/calculoCuantia")]
+        public async Task<ActionResult<(double, double)>> GetCalculoCuantia(long id)
+        {
+            var baseHormigon = await _context.BasesHormigon.FindAsync(id);
+            if (baseHormigon == null) return NotFound();
+
+            var dimensionesBase = EstimarDimensiones(baseHormigon);
+            var cuantia = CalcularCuantia(baseHormigon, dimensionesBase);
+            return Ok(cuantia);
+        }
+
         // PUT: api/BasesHormigon/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
