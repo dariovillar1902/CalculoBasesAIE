@@ -54,16 +54,53 @@ namespace CalculoBasesAIE.Controllers
             return Ok(verificaTension);
         }
 
-        // Get reinforcement calculations
         [HttpGet("{id}/calculoCuantia")]
-        public async Task<ActionResult<(double, double)>> GetCalculoCuantia(long id)
+        public async Task<ActionResult<BaseHormigonCuantia>> GetCalculoCuantia(long id)
+        {
+            var baseHormigon = await _context.BasesHormigon.FindAsync(id);
+            if (baseHormigon == null) return NotFound();
+
+            var dimensionesBase = EstimarDimensiones(baseHormigon);
+            var baseHormigonCuantia = CalcularCuantia(baseHormigon, dimensionesBase);
+
+            return Ok(baseHormigonCuantia);
+        }
+
+        [HttpGet("{id}/calculoArmadura")]
+        public async Task<ActionResult<BaseHormigonArmadura>> GetCalculoArmadura(long id)
         {
             var baseHormigon = await _context.BasesHormigon.FindAsync(id);
             if (baseHormigon == null) return NotFound();
 
             var dimensionesBase = EstimarDimensiones(baseHormigon);
             var cuantia = CalcularCuantia(baseHormigon, dimensionesBase);
-            return Ok(cuantia);
+            var calculoArmadura = CalcularArmadura(baseHormigon, dimensionesBase, cuantia);
+
+            return Ok(calculoArmadura);
+        }
+
+        [HttpGet("{id}/verificaPunzonado")]
+        public async Task<ActionResult<BaseHormigonVerificacionPunzonado>> GetVerificaPunzonado(long id)
+        {
+            var baseHormigon = await _context.BasesHormigon.FindAsync(id);
+            if (baseHormigon == null) return NotFound();
+
+            var dimensionesBase = EstimarDimensiones(baseHormigon);
+            var verificacionPunzonado = VerificarPunzonado(baseHormigon, dimensionesBase);
+
+            return Ok(verificacionPunzonado);
+        }
+
+        [HttpGet("{id}/verificaCorte")]
+        public async Task<ActionResult<BaseHormigonVerificacionCorte>> GetVerificaCorte(long id)
+        {
+            var baseHormigon = await _context.BasesHormigon.FindAsync(id);
+            if (baseHormigon == null) return NotFound();
+
+            var dimensionesBase = EstimarDimensiones(baseHormigon);
+            var verificacionCorte = VerificarCorte(baseHormigon, dimensionesBase);
+
+            return Ok(verificacionCorte);
         }
 
         // PUT: api/BasesHormigon/5
@@ -275,64 +312,87 @@ namespace CalculoBasesAIE.Controllers
         }
 
 
-        private static (double, double) CalcularCuantia(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones)
+        private static BaseHormigonCuantia CalcularCuantia(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones)
         {
-            var combinacionesCarga = new double[]
+            var baseHormigonCuantia = new BaseHormigonCuantia
             {
-        1.4 * (baseHormigon.PorcentajeCargaD.Valor / 100) * baseHormigon.EsfuerzoAxil.Valor,
-        1.2 * (baseHormigon.PorcentajeCargaD.Valor / 100) * baseHormigon.EsfuerzoAxil.Valor +
-        1.6 * (baseHormigon.PorcentajeCargaL.Valor / 100) * baseHormigon.EsfuerzoAxil.Valor
+                EsfuerzoAxilMayorado = new double[]
+                {
+            1.4 * (baseHormigon.PorcentajeCargaD.Valor / 100) * baseHormigon.EsfuerzoAxil.Valor,
+            1.2 * (baseHormigon.PorcentajeCargaD.Valor / 100) * baseHormigon.EsfuerzoAxil.Valor +
+            1.6 * (baseHormigon.PorcentajeCargaL.Valor / 100) * baseHormigon.EsfuerzoAxil.Valor
+                }.Max()
             };
 
-            var esfuerzoAxilMayorado = combinacionesCarga.Max();
-            var cargaMayorada = esfuerzoAxilMayorado / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY);
+            baseHormigonCuantia.CargaMayorada = baseHormigonCuantia.EsfuerzoAxilMayorado /
+                (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY);
 
-            var momentoMayoradoX = cargaMayorada * Math.Pow(baseHormigonDimensiones.AnchoX - baseHormigon.AnchoColumnaX.Valor, 2) * baseHormigonDimensiones.AnchoY / 8;
-            var momentoMayoradoY = cargaMayorada * Math.Pow(baseHormigonDimensiones.AnchoY - baseHormigon.AnchoColumnaY.Valor, 2) * baseHormigonDimensiones.AnchoX / 8;
+            baseHormigonCuantia.MomentoMayoradoX = baseHormigonCuantia.CargaMayorada *
+                Math.Pow(baseHormigonDimensiones.AnchoX - baseHormigon.AnchoColumnaX.Valor, 2) *
+                baseHormigonDimensiones.AnchoY / 8;
 
-            var momentoNominalX = momentoMayoradoX / 0.9;
-            var momentoNominalY = momentoMayoradoY / 0.9;
+            baseHormigonCuantia.MomentoMayoradoY = baseHormigonCuantia.CargaMayorada *
+                Math.Pow(baseHormigonDimensiones.AnchoY - baseHormigon.AnchoColumnaY.Valor, 2) *
+                baseHormigonDimensiones.AnchoX / 8;
 
-            var factorAdimensionalX = momentoNominalX / (baseHormigonDimensiones.AnchoY * Math.Pow((baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02), 2) * 0.85 * baseHormigon.ResistenciaCaracteristicaHormigon.Valor * 1000);
-            var factorAdimensionalY = momentoNominalY / (baseHormigonDimensiones.AnchoX * Math.Pow((baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02), 2) * 0.85 * baseHormigon.ResistenciaCaracteristicaHormigon.Valor * 1000);
+            baseHormigonCuantia.MomentoNominalX = baseHormigonCuantia.MomentoMayoradoX / 0.9;
+            baseHormigonCuantia.MomentoNominalY = baseHormigonCuantia.MomentoMayoradoY / 0.9;
 
-            var cuantiaMecanicaX = 1 - Math.Sqrt(1 - 2 * factorAdimensionalX);
-            var cuantiaMecanicaY = 1 - Math.Sqrt(1 - 2 * factorAdimensionalY);
+            baseHormigonCuantia.FactorAdimensionalX = baseHormigonCuantia.MomentoNominalX /
+                (baseHormigonDimensiones.AnchoY * Math.Pow((baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02), 2) *
+                 0.85 * baseHormigon.ResistenciaCaracteristicaHormigon.Valor * 1000);
 
-            var cuantiaCalculoX = cuantiaMecanicaX * 0.85 * baseHormigon.ResistenciaCaracteristicaHormigon.Valor / (baseHormigon.TensionFluenciaAcero.Valor / 1000);
-            var cuantiaCalculoY = cuantiaMecanicaY * 0.85 * baseHormigon.ResistenciaCaracteristicaHormigon.Valor / (baseHormigon.TensionFluenciaAcero.Valor / 1000);
+            baseHormigonCuantia.FactorAdimensionalY = baseHormigonCuantia.MomentoNominalY /
+                (baseHormigonDimensiones.AnchoX * Math.Pow((baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02), 2) *
+                 0.85 * baseHormigon.ResistenciaCaracteristicaHormigon.Valor * 1000);
 
-            var cuantiaMaxima = 0.85 * 3 * 0.85 * baseHormigon.ResistenciaCaracteristicaHormigon.Valor / (8 * (baseHormigon.TensionFluenciaAcero.Valor / 1000));
-            var verificaCuantiaMaxima = cuantiaCalculoX < cuantiaMaxima && cuantiaCalculoY < cuantiaMaxima;
+            baseHormigonCuantia.CuantiaMecanicaX = 1 - Math.Sqrt(1 - 2 * baseHormigonCuantia.FactorAdimensionalX);
+            baseHormigonCuantia.CuantiaMecanicaY = 1 - Math.Sqrt(1 - 2 * baseHormigonCuantia.FactorAdimensionalY);
 
-            var cuantiaMinima = 1.4 / (baseHormigon.TensionFluenciaAcero.Valor / 1000);
+            baseHormigonCuantia.CuantiaCalculoX = baseHormigonCuantia.CuantiaMecanicaX *
+                0.85 * baseHormigon.ResistenciaCaracteristicaHormigon.Valor /
+                (baseHormigon.TensionFluenciaAcero.Valor / 1000);
 
-            var cuantiaAdoptadaX = Math.Min(Math.Max(cuantiaCalculoX, cuantiaMinima), 4 / 3.0 * cuantiaCalculoX);
-            var cuantiaAdoptadaY = Math.Min(Math.Max(cuantiaCalculoY, cuantiaMinima), 4 / 3.0 * cuantiaCalculoY);
+            baseHormigonCuantia.CuantiaCalculoY = baseHormigonCuantia.CuantiaMecanicaY *
+                0.85 * baseHormigon.ResistenciaCaracteristicaHormigon.Valor /
+                (baseHormigon.TensionFluenciaAcero.Valor / 1000);
 
-            var areaAceroX = cuantiaAdoptadaX * baseHormigonDimensiones.AnchoY * (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02);
-            var areaAceroY = cuantiaAdoptadaY * baseHormigonDimensiones.AnchoX * (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02);
+            baseHormigonCuantia.CuantiaMaxima = 0.85 * 3 * 0.85 * baseHormigon.ResistenciaCaracteristicaHormigon.Valor /
+                (8 * (baseHormigon.TensionFluenciaAcero.Valor / 1000));
 
-            return (areaAceroX, areaAceroY);
+            baseHormigonCuantia.VerificaCuantiaMaxima = baseHormigonCuantia.CuantiaCalculoX < baseHormigonCuantia.CuantiaMaxima &&
+                                                        baseHormigonCuantia.CuantiaCalculoY < baseHormigonCuantia.CuantiaMaxima;
+
+            baseHormigonCuantia.CuantiaMinima = 1.4 / (baseHormigon.TensionFluenciaAcero.Valor / 1000);
+
+            baseHormigonCuantia.CuantiaAdoptadaX = Math.Min(Math.Max(baseHormigonCuantia.CuantiaCalculoX, baseHormigonCuantia.CuantiaMinima), 4 / 3.0 * baseHormigonCuantia.CuantiaCalculoX);
+            baseHormigonCuantia.CuantiaAdoptadaY = Math.Min(Math.Max(baseHormigonCuantia.CuantiaCalculoY, baseHormigonCuantia.CuantiaMinima), 4 / 3.0 * baseHormigonCuantia.CuantiaCalculoY);
+
+            baseHormigonCuantia.AreaAceroX = baseHormigonCuantia.CuantiaAdoptadaX * baseHormigonDimensiones.AnchoY *
+                (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) * 10000;
+
+            baseHormigonCuantia.AreaAceroY = baseHormigonCuantia.CuantiaAdoptadaY * baseHormigonDimensiones.AnchoX *
+                (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) * 10000;
+
+            return baseHormigonCuantia;
         }
 
-
-        private static BaseHormigonArmadura CalcularArmadura(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones, (double, double) areasAdoptadas)
+        private static BaseHormigonArmadura CalcularArmadura(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones, BaseHormigonCuantia baseHormigonCuantia)
         {
             var diametrosBarras = (0.016, 0.016);
 
             var areasBarrasIndividuales = (Math.PI * Math.Pow(diametrosBarras.Item1, 2) / 4, Math.PI * Math.Pow(diametrosBarras.Item2, 2) / 4);
             
             var cantidadBarras = (
-                Math.Ceiling(areasAdoptadas.Item1 / areasBarrasIndividuales.Item1),
-                Math.Ceiling(areasAdoptadas.Item2 / areasBarrasIndividuales.Item2)
+                Math.Ceiling(baseHormigonCuantia.AreaAceroX / (10000 * areasBarrasIndividuales.Item1)),
+                Math.Ceiling(baseHormigonCuantia.AreaAceroY / (10000 * areasBarrasIndividuales.Item2))
             );
 
             var separacionBarras = (
-                Math.Floor(Math.Min((baseHormigonDimensiones.AnchoY - 2 * baseHormigon.RecubrimientoHormigon.Valor) / (cantidadBarras.Item1 - 1),
+                Math.Floor(100 * Math.Min((baseHormigonDimensiones.AnchoY - 2 * baseHormigon.RecubrimientoHormigon.Valor) / (cantidadBarras.Item1 - 1),
                          new double[] { 2.5 * baseHormigonDimensiones.Altura, 25 * diametrosBarras.Item1, 0.3 }.Min()) * 100) / 100,
 
-                Math.Floor(Math.Min((baseHormigonDimensiones.AnchoX - 2 * baseHormigon.RecubrimientoHormigon.Valor) / (cantidadBarras.Item2 - 1),
+                Math.Floor(100 * Math.Min((baseHormigonDimensiones.AnchoX - 2 * baseHormigon.RecubrimientoHormigon.Valor) / (cantidadBarras.Item2 - 1),
                          new double[] { 2.5 * baseHormigonDimensiones.Altura, 25 * diametrosBarras.Item2, 0.3 }.Min()) * 100) / 100
             );
 
@@ -347,8 +407,10 @@ namespace CalculoBasesAIE.Controllers
             return baseHormigonArmadura;
         }
 
-        private static bool VerificarPunzonado(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones)
+        private static BaseHormigonVerificacionPunzonado VerificarPunzonado(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones)
         {
+            var verificacionPunzonado = new BaseHormigonVerificacionPunzonado();
+
             var combinacionesCarga = new double[]
             {
         1.4 * (baseHormigon.PorcentajeCargaD.Valor / 100) * baseHormigon.EsfuerzoAxil.Valor,
@@ -356,59 +418,75 @@ namespace CalculoBasesAIE.Controllers
         1.6 * (baseHormigon.PorcentajeCargaL.Valor / 100) * baseHormigon.EsfuerzoAxil.Valor
             };
 
-            var esfuerzoAxilMayorado = combinacionesCarga.Max();
+            verificacionPunzonado.EsfuerzoAxilMayorado = combinacionesCarga.Max();
 
-            var cargaTotal = baseHormigon.EsfuerzoAxil.Valor / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY) +
-                             baseHormigon.PesoEspecificoHormigon.Valor * baseHormigonDimensiones.Altura +
-                             baseHormigon.PesoEspecificoSuelo.Valor * (baseHormigon.NivelFundacion.Valor - baseHormigonDimensiones.Altura);
+            verificacionPunzonado.CargaTotal = baseHormigon.EsfuerzoAxil.Valor / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY) +
+                                               baseHormigon.PesoEspecificoHormigon.Valor * baseHormigonDimensiones.Altura +
+                                               baseHormigon.PesoEspecificoSuelo.Valor * (baseHormigon.NivelFundacion.Valor - baseHormigonDimensiones.Altura);
 
-            var resistenciaRequerida = esfuerzoAxilMayorado - cargaTotal * (baseHormigon.AnchoColumnaX.Valor + (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02)) *
-                                       (baseHormigon.AnchoColumnaY.Valor + (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02));
+            verificacionPunzonado.ResistenciaRequerida = verificacionPunzonado.EsfuerzoAxilMayorado - verificacionPunzonado.CargaTotal *
+                (baseHormigon.AnchoColumnaX.Valor + (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02)) *
+                (baseHormigon.AnchoColumnaY.Valor + (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02));
 
-            var b0 = 2 * (baseHormigon.AnchoColumnaX.Valor + baseHormigon.AnchoColumnaY.Valor) +
-                     4 * (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02);
+            verificacionPunzonado.B0 = 2 * (baseHormigon.AnchoColumnaX.Valor + baseHormigon.AnchoColumnaY.Valor) +
+                                       4 * (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02);
 
-            var b = new double[] { baseHormigon.AnchoColumnaX.Valor, baseHormigon.AnchoColumnaY.Valor }.Max() /
-                    new double[] { baseHormigon.AnchoColumnaX.Valor, baseHormigon.AnchoColumnaY.Valor }.Min();
+            verificacionPunzonado.B = new double[] { baseHormigon.AnchoColumnaX.Valor, baseHormigon.AnchoColumnaY.Valor }.Max() /
+                                      new double[] { baseHormigon.AnchoColumnaX.Valor, baseHormigon.AnchoColumnaY.Valor }.Min();
 
             var resistenciasNominales = new double[]
             {
-        b0 * (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) * Math.Sqrt(baseHormigon.ResistenciaCaracteristicaHormigon.Valor * 1000) / 3,
-        (1 + 2 / b) * b0 * (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) * Math.Sqrt(baseHormigon.ResistenciaCaracteristicaHormigon.Valor * 1000) / 6,
-        (2 + 40 * (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) / b0) * b0 * (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) *
+        verificacionPunzonado.B0 * (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) *
+        Math.Sqrt(baseHormigon.ResistenciaCaracteristicaHormigon.Valor * 1000) / 3,
+
+        (1 + 2 / verificacionPunzonado.B) * verificacionPunzonado.B0 * (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) *
+        Math.Sqrt(baseHormigon.ResistenciaCaracteristicaHormigon.Valor * 1000) / 6,
+
+        (2 + 40 * (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) / verificacionPunzonado.B0) *
+        verificacionPunzonado.B0 * (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) *
         Math.Sqrt(baseHormigon.ResistenciaCaracteristicaHormigon.Valor * 1000) / 12
             };
 
-            var resistenciaNominal = resistenciasNominales.Min();
-            var resistenciaDiseno = resistenciaNominal * 0.75;
+            verificacionPunzonado.ResistenciaNominal = resistenciasNominales.Min();
+            verificacionPunzonado.ResistenciaDiseno = verificacionPunzonado.ResistenciaNominal * 0.75;
 
-            return resistenciaRequerida <= resistenciaDiseno;
+            verificacionPunzonado.CumpleVerificacion = verificacionPunzonado.ResistenciaRequerida <= verificacionPunzonado.ResistenciaDiseno;
+
+            return verificacionPunzonado;
         }
 
-
-        private static bool VerificarCorte(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones)
+        private static BaseHormigonVerificacionCorte VerificarCorte(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones)
         {
-            var cargaTotal = baseHormigon.EsfuerzoAxil.Valor / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY) +
-                             baseHormigon.PesoEspecificoHormigon.Valor * baseHormigonDimensiones.Altura +
-                             baseHormigon.PesoEspecificoSuelo.Valor * (baseHormigon.NivelFundacion.Valor - baseHormigonDimensiones.Altura);
+            var verificacionCorte = new BaseHormigonVerificacionCorte
+            {
+                CargaTotal = baseHormigon.EsfuerzoAxil.Valor / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY) +
+                                           baseHormigon.PesoEspecificoHormigon.Valor * baseHormigonDimensiones.Altura +
+                                           baseHormigon.PesoEspecificoSuelo.Valor * (baseHormigon.NivelFundacion.Valor - baseHormigonDimensiones.Altura)
+            };
 
-            var resistenciaRequeridaX = cargaTotal * (((baseHormigonDimensiones.AnchoX - baseHormigon.AnchoColumnaX.Valor) / 2 -
-                                      (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02))) * baseHormigonDimensiones.AnchoY;
+            verificacionCorte.ResistenciaRequeridaX = verificacionCorte.CargaTotal *
+                (((baseHormigonDimensiones.AnchoX - baseHormigon.AnchoColumnaX.Valor) / 2 -
+                 (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02))) * baseHormigonDimensiones.AnchoY;
 
-            var resistenciaRequeridaY = cargaTotal * (((baseHormigonDimensiones.AnchoY - baseHormigon.AnchoColumnaY.Valor) / 2 -
-                                      (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02))) * baseHormigonDimensiones.AnchoX;
+            verificacionCorte.ResistenciaRequeridaY = verificacionCorte.CargaTotal *
+                (((baseHormigonDimensiones.AnchoY - baseHormigon.AnchoColumnaY.Valor) / 2 -
+                 (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02))) * baseHormigonDimensiones.AnchoX;
 
-            var resistenciaNominalX = baseHormigonDimensiones.AnchoY * (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) *
-                                      Math.Sqrt(baseHormigon.ResistenciaCaracteristicaHormigon.Valor * 1000) / 6;
+            verificacionCorte.ResistenciaNominalX = baseHormigonDimensiones.AnchoY *
+                (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) *
+                Math.Sqrt(baseHormigon.ResistenciaCaracteristicaHormigon.Valor * 1000) / 6;
 
-            var resistenciaNominalY = baseHormigonDimensiones.AnchoX * (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) *
-                                      Math.Sqrt(baseHormigon.ResistenciaCaracteristicaHormigon.Valor * 1000) / 6;
+            verificacionCorte.ResistenciaNominalY = baseHormigonDimensiones.AnchoX *
+                (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) *
+                Math.Sqrt(baseHormigon.ResistenciaCaracteristicaHormigon.Valor * 1000) / 6;
 
-            var resistenciaDisenoX = resistenciaNominalX * 0.75;
-            var resistenciaDisenoY = resistenciaNominalY * 0.75;
+            verificacionCorte.ResistenciaDisenoX = verificacionCorte.ResistenciaNominalX * 0.75;
+            verificacionCorte.ResistenciaDisenoY = verificacionCorte.ResistenciaNominalY * 0.75;
 
-            return resistenciaRequeridaX <= resistenciaDisenoX && resistenciaRequeridaY < resistenciaDisenoY;
+            verificacionCorte.CumpleVerificacion = verificacionCorte.ResistenciaRequeridaX <= verificacionCorte.ResistenciaDisenoX &&
+                                                   verificacionCorte.ResistenciaRequeridaY <= verificacionCorte.ResistenciaDisenoY;
+
+            return verificacionCorte;
         }
-
     }
 }
