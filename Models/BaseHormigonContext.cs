@@ -24,6 +24,8 @@ namespace CalculoBasesAIE.Models
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.ResistenciaCaracteristicaHormigon);
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.RecubrimientoHormigon);
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.TensionFluenciaAcero);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.DiametroBarrasX);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.DiametroBarrasY);
         }
     }
 }

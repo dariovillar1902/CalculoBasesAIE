@@ -15,6 +15,8 @@
         public ValueUnitPair ResistenciaCaracteristicaHormigon { get; set; }
         public ValueUnitPair RecubrimientoHormigon { get; set; }
         public ValueUnitPair TensionFluenciaAcero { get; set; }
+        public ValueUnitPair DiametroBarrasX { get; set; }
+        public ValueUnitPair DiametroBarrasY {  get; set; }
     }
 
     public class ValueUnitPair

@@ -1,4 +1,5 @@
 using CalculoBasesAIE.Models;
+using CalculoBasesAIE.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddScoped<IExcelService, ExcelService>();
 builder.Services.AddDbContext<BaseHormigonContext>(opt =>
     opt.UseInMemoryDatabase("BaseHormigon"));
 

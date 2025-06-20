@@ -1,19 +1,64 @@
 ﻿################################################################################
-# Este archivo .gitignore ha sido creado automáticamente por Microsoft(R) Visual Studio.
+# General build artifacts
 ################################################################################
+/bin/
+/obj/
+/out/
 
-/obj/Debug/net9.0/CalculoBasesAIE.pdb
-/obj/Debug/net9.0/ref/CalculoBasesAIE.dll
-/.vs/CalculoBasesAIE/DesignTimeBuild/.dtbcache.v2
-/.vs/CalculoBasesAIE/FileContentIndex
-/.vs/CalculoBasesAIE/v17/.futdcache.v2
-/.vs/CalculoBasesAIE/v17/.suo
-/.vs/CalculoBasesAIE/v17/DocumentLayout.backup.json
-/.vs/CalculoBasesAIE/v17/DocumentLayout.json
-/.vs/ProjectEvaluation/calculobasesaie.metadata.v9.bin
-/.vs/ProjectEvaluation/calculobasesaie.projects.v9.bin
-/.vs/ProjectEvaluation/calculobasesaie.strings.v9.bin
-/bin/Debug/net9.0/CalculoBasesAIE.dll
-/bin/Debug/net9.0/CalculoBasesAIE.exe
-/bin/Debug/net9.0/CalculoBasesAIE.pdb
-/obj
+################################################################################
+# Specific build configurations
+################################################################################
+/bin/Debug/
+/bin/Release/
+/obj/Debug/
+/obj/Release/
+/bin/Debug/net*/  # Includes net9.0, net8.0, etc.
+/obj/Debug/net*/  # Just in case you're targeting multiple frameworks
+
+################################################################################
+# User-specific files and IDE state
+################################################################################
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.dbmdl
+*.sdf
+*.cache
+*.log
+
+################################################################################
+# Rider + VS Code IDE settings
+################################################################################
+.idea/
+/.vscode/
+*.sln.iml
+
+################################################################################
+# Visual Studio workspace
+################################################################################
+/.vs/
+/.vsconfig
+/.vs/ProjectEvaluation/
+!.vs/ProjectEvaluation/.gitkeep
+
+################################################################################
+# DotCover, coverage, and temp files
+################################################################################
+TestResult*/
+*.coverage
+*.coveragexml
+*.vsp
+*.vspx
+*.vsmdi
+*.tscache
+
+################################################################################
+# Packaging / publish outputs
+################################################################################
+publish/
+/artifacts/
+/*.nupkg
+*.snupkg
+
+################################################################################
