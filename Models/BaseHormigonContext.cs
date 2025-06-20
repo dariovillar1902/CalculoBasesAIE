@@ -4,14 +4,19 @@ namespace CalculoBasesAIE.Models
 {
     public class BaseHormigonContext(DbContextOptions<BaseHormigonContext> options) : DbContext(options)
     {
-        public DbSet<BaseHormigon> BasesHormigon { get; set; } = null!;
+        public DbSet<BaseHormigon> BasesHormigon { get; set; }
+        public DbSet<BaseHormigonDimensiones> BasesHormigonDimensiones { get; set; }
+        public DbSet<BaseHormigonArmadura> BasesHormigonArmaduras { get; set; }
+        public DbSet<BaseHormigonCuantia> BasesHormigonCuantias { get; set; }
+        public DbSet<BaseHormigonDiametrosBarras> BasesHormigonDiametrosBarras { get; set; }
+        public DbSet<BaseHormigonVerificacionCorte> BasesHormigonVerificacionCorte { get; set; }
+        public DbSet<BaseHormigonVerificacionPunzonado> BasesHormigonVerificacionPunzonado { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<BaseHormigon>()
                 .HasKey(b => b.Id);
 
-            // Configure complex type (ValueUnitPair) for nested properties
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.EsfuerzoAxil);
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.PorcentajeCargaD);
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.PorcentajeCargaL);

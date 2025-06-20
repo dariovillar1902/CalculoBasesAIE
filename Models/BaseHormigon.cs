@@ -18,11 +18,4 @@
         public ValueUnitPair DiametroBarrasX { get; set; }
         public ValueUnitPair DiametroBarrasY {  get; set; }
     }
-
-    public class ValueUnitPair
-    {
-        public double Valor { get; set; }
-        public string Unidad { get; set; }
-        public string Tipo { get; set; }
-    }
 }
