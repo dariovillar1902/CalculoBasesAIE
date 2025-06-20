@@ -470,6 +470,26 @@ namespace CalculoBasesAIE.Controllers
             return CreatedAtAction(nameof(GetBaseHormigon), new { id = baseHormigon.Id }, baseHormigon);
         }
 
+        [HttpPost("calculoArmadura/{id}")]
+        public async Task<ActionResult<BaseHormigonArmadura>> CalcularArmaduraCustom(
+            long id,
+            [FromBody] BaseHormigonDiametrosBarras nuevosDiametros)
+        {
+            var baseHormigon = await context.BasesHormigon.FindAsync(id);
+            if (baseHormigon == null) return NotFound();
+
+            baseHormigon.DiametroBarrasX.Valor = nuevosDiametros.DiametroX / 1000;
+            baseHormigon.DiametroBarrasY.Valor = nuevosDiametros.DiametroY / 1000;
+
+            var dim = EstimarDimensiones(baseHormigon);
+            var cuantia = CalcularCuantia(baseHormigon, dim);
+            var armadura = CalcularArmadura(baseHormigon, dim, cuantia);
+
+            return Ok(armadura);
+        }
+
+
+
         private bool BaseHormigonExists(long id)
         {
             return context.BasesHormigon.Any(e => e.Id == id);
