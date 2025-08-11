@@ -3,6 +3,7 @@
     public class BaseHormigon
     {
         public long Id { get; set; }
+        public string Nombre { get; set; }
         public ValueUnitPair EsfuerzoAxil { get; set; }
         public ValueUnitPair PorcentajeCargaD { get; set; }
         public ValueUnitPair PorcentajeCargaL { get; set; }

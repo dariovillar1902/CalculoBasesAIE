@@ -1,5 +1,4 @@
 ﻿using CalculoBasesAIE.Models;
-using DocumentFormat.OpenXml.InkML;
 using Microsoft.EntityFrameworkCore;
 
 namespace CalculoBasesAIE.Repositories.BaseHormigonRepository
@@ -20,7 +19,67 @@ namespace CalculoBasesAIE.Repositories.BaseHormigonRepository
 
         public async Task UpdateAsync(BaseHormigon baseHormigon)
         {
-            context.Entry(baseHormigon).State = EntityState.Modified;
+            var existingEntity = await context.BasesHormigon.FindAsync(baseHormigon.Id);
+            if (existingEntity is null) return;
+
+            existingEntity.Nombre = baseHormigon.Nombre;
+
+            existingEntity.EsfuerzoAxil.Valor = baseHormigon.EsfuerzoAxil.Valor;
+            existingEntity.EsfuerzoAxil.Unidad = baseHormigon.EsfuerzoAxil.Unidad;
+            existingEntity.EsfuerzoAxil.Tipo = baseHormigon.EsfuerzoAxil.Tipo;
+
+            existingEntity.PorcentajeCargaD.Valor = baseHormigon.PorcentajeCargaD.Valor;
+            existingEntity.PorcentajeCargaD.Unidad = baseHormigon.PorcentajeCargaD.Unidad;
+            existingEntity.PorcentajeCargaD.Tipo = baseHormigon.PorcentajeCargaD.Tipo;
+
+            existingEntity.PorcentajeCargaL.Valor = baseHormigon.PorcentajeCargaL.Valor;
+            existingEntity.PorcentajeCargaL.Unidad = baseHormigon.PorcentajeCargaL.Unidad;
+            existingEntity.PorcentajeCargaL.Tipo = baseHormigon.PorcentajeCargaL.Tipo;
+
+            existingEntity.AnchoColumnaX.Valor = baseHormigon.AnchoColumnaX.Valor;
+            existingEntity.AnchoColumnaX.Unidad = baseHormigon.AnchoColumnaX.Unidad;
+            existingEntity.AnchoColumnaX.Tipo = baseHormigon.AnchoColumnaX.Tipo;
+
+            existingEntity.AnchoColumnaY.Valor = baseHormigon.AnchoColumnaY.Valor;
+            existingEntity.AnchoColumnaY.Unidad = baseHormigon.AnchoColumnaY.Unidad;
+            existingEntity.AnchoColumnaY.Tipo = baseHormigon.AnchoColumnaY.Tipo;
+
+            existingEntity.CargaAdmisible.Valor = baseHormigon.CargaAdmisible.Valor;
+            existingEntity.CargaAdmisible.Unidad = baseHormigon.CargaAdmisible.Unidad;
+            existingEntity.CargaAdmisible.Tipo = baseHormigon.CargaAdmisible.Tipo;
+
+            existingEntity.PesoEspecificoSuelo.Valor = baseHormigon.PesoEspecificoSuelo.Valor;
+            existingEntity.PesoEspecificoSuelo.Unidad = baseHormigon.PesoEspecificoSuelo.Unidad;
+            existingEntity.PesoEspecificoSuelo.Tipo = baseHormigon.PesoEspecificoSuelo.Tipo;
+
+            existingEntity.NivelFundacion.Valor = baseHormigon.NivelFundacion.Valor;
+            existingEntity.NivelFundacion.Unidad = baseHormigon.NivelFundacion.Unidad;
+            existingEntity.NivelFundacion.Tipo = baseHormigon.NivelFundacion.Tipo;
+
+            existingEntity.PesoEspecificoHormigon.Valor = baseHormigon.PesoEspecificoHormigon.Valor;
+            existingEntity.PesoEspecificoHormigon.Unidad = baseHormigon.PesoEspecificoHormigon.Unidad;
+            existingEntity.PesoEspecificoHormigon.Tipo = baseHormigon.PesoEspecificoHormigon.Tipo;
+
+            existingEntity.ResistenciaCaracteristicaHormigon.Valor = baseHormigon.ResistenciaCaracteristicaHormigon.Valor;
+            existingEntity.ResistenciaCaracteristicaHormigon.Unidad = baseHormigon.ResistenciaCaracteristicaHormigon.Unidad;
+            existingEntity.ResistenciaCaracteristicaHormigon.Tipo = baseHormigon.ResistenciaCaracteristicaHormigon.Tipo;
+
+            existingEntity.RecubrimientoHormigon.Valor = baseHormigon.RecubrimientoHormigon.Valor;
+            existingEntity.RecubrimientoHormigon.Unidad = baseHormigon.RecubrimientoHormigon.Unidad;
+            existingEntity.RecubrimientoHormigon.Tipo = baseHormigon.RecubrimientoHormigon.Tipo;
+
+            existingEntity.TensionFluenciaAcero.Valor = baseHormigon.TensionFluenciaAcero.Valor;
+            existingEntity.TensionFluenciaAcero.Unidad = baseHormigon.TensionFluenciaAcero.Unidad;
+            existingEntity.TensionFluenciaAcero.Tipo = baseHormigon.TensionFluenciaAcero.Tipo;
+
+            existingEntity.DiametroBarrasX.Valor = baseHormigon.DiametroBarrasX.Valor;
+            existingEntity.DiametroBarrasX.Unidad = baseHormigon.DiametroBarrasX.Unidad;
+            existingEntity.DiametroBarrasX.Tipo = baseHormigon.DiametroBarrasX.Tipo;
+
+            existingEntity.DiametroBarrasY.Valor = baseHormigon.DiametroBarrasY.Valor;
+            existingEntity.DiametroBarrasY.Unidad = baseHormigon.DiametroBarrasY.Unidad;
+            existingEntity.DiametroBarrasY.Tipo = baseHormigon.DiametroBarrasY.Tipo;
+
             await context.SaveChangesAsync();
         }
 

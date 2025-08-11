@@ -73,9 +73,8 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
 
         public async Task<bool> UpdateAsync(long id, BaseHormigon baseHormigon)
         {
-            if (id != baseHormigon.Id) return false;
             if (!await repository.ExistsAsync(id)) return false;
-
+            baseHormigon.Id = id;
             await repository.UpdateAsync(baseHormigon);
             return true;
         }
