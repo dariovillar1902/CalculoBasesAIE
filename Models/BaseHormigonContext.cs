@@ -2,8 +2,13 @@
 
 namespace CalculoBasesAIE.Models
 {
-    public class BaseHormigonContext(DbContextOptions<BaseHormigonContext> options) : DbContext(options)
+    public class BaseHormigonContext : DbContext
     {
+        public BaseHormigonContext(DbContextOptions<BaseHormigonContext> options)
+            : base(options)
+        {
+        }
+
         public DbSet<BaseHormigon> BasesHormigon { get; set; }
         public DbSet<BaseHormigonDimensiones> BasesHormigonDimensiones { get; set; }
         public DbSet<BaseHormigonArmadura> BasesHormigonArmaduras { get; set; }
@@ -11,18 +16,25 @@ namespace CalculoBasesAIE.Models
         public DbSet<BaseHormigonDiametrosBarras> BasesHormigonDiametrosBarras { get; set; }
         public DbSet<BaseHormigonVerificacionCorte> BasesHormigonVerificacionCorte { get; set; }
         public DbSet<BaseHormigonVerificacionPunzonado> BasesHormigonVerificacionPunzonado { get; set; }
+        public DbSet<BaseHormigonVerificaciones> BasesHormigonVerificaciones { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<BaseHormigon>()
                 .HasKey(b => b.Id);
 
+            // Configuramos las propiedades OwnsOne para los ValueUnitPair
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.EsfuerzoAxil);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.EsfuerzoCorteX);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.EsfuerzoCorteY);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.MomentoX);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.MomentoY);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CargaAdmisible);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.ModuloBalastoVertical);
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.PorcentajeCargaD);
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.PorcentajeCargaL);
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.AnchoColumnaX);
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.AnchoColumnaY);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CargaAdmisible);
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.PesoEspecificoSuelo);
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.NivelFundacion);
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.PesoEspecificoHormigon);
