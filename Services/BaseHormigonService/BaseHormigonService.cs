@@ -207,6 +207,24 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
                     baseHormigon.ModuloBalastoVertical.Unidad = "kN/m³";
                 }
             }
+
+            // Momentos → kN·m
+            void ConvertMomento(ValueUnitPair campo)
+            {
+                if (campo.Unidad == "N·m")
+                {
+                    campo.Valor /= 1000; // 1 kN·m = 1000 N·m
+                    campo.Unidad = "kN·m";
+                }
+                else if (campo.Unidad == "tf·m")
+                {
+                    campo.Valor *= 9.80665; // 1 tf·m = 9.80665 kN·m
+                    campo.Unidad = "kN·m";
+                }
+            }
+
+            ConvertMomento(baseHormigon.MomentoX);
+            ConvertMomento(baseHormigon.MomentoY);
         }
 
         public BaseHormigonDimensiones EstimarDimensiones(BaseHormigon baseHormigon)
@@ -229,8 +247,8 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
             dimensiones.AnchoX = dimensiones.RelacionLados * dimensiones.AnchoY;
 
             // 5. Ajuste a múltiplos de 0.1 m
-            dimensiones.AnchoX = Math.Ceiling(dimensiones.AnchoX * 10) / 10;
-            dimensiones.AnchoY = Math.Ceiling(dimensiones.AnchoY * 10) / 10;
+            dimensiones.AnchoX = Math.Ceiling(dimensiones.AnchoX * 20) / 20;
+            dimensiones.AnchoY = Math.Ceiling(dimensiones.AnchoY * 20) / 20;
 
             // 6. Vuelos
             dimensiones.VueloX = dimensiones.AnchoX - baseHormigon.AnchoColumnaX.Valor;
@@ -255,15 +273,15 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
         public BaseHormigonVerificaciones VerificarTension(BaseHormigon baseHormigon, BaseHormigonDimensiones dimensiones)
         {
             // Excentricidades
-            double ex = baseHormigon.MomentoX.Valor / baseHormigon.EsfuerzoAxil.Valor; // en metros
-            double ey = baseHormigon.MomentoY.Valor / baseHormigon.EsfuerzoAxil.Valor; // en metros
+            double ex = baseHormigon.MomentoX.Valor / dimensiones.CargaDiseno; // en metros
+            double ey = baseHormigon.MomentoY.Valor / dimensiones.CargaDiseno; // en metros
 
             // Tensiones ajustadas por excentricidad
             double tensionX = dimensiones.CargaDiseno * (1 + 6 * ex / dimensiones.AnchoX) / (dimensiones.AnchoX * dimensiones.AnchoY);
-            double tensionY = dimensiones.CargaDiseno * (1 - 6 * ey / dimensiones.AnchoY) / (dimensiones.AnchoX * dimensiones.AnchoY);
+            double tensionY = dimensiones.CargaDiseno * (1 - 6 * ex / dimensiones.AnchoX) / (dimensiones.AnchoX * dimensiones.AnchoY);
 
             // Verificación máxima
-            bool dentroLimite = Math.Max(tensionX, tensionY) < dimensiones.TensionPromedio;
+            bool dentroLimite = Math.Max(tensionX, tensionY) < 1.25 * baseHormigon.CargaAdmisible.Valor;
 
             return new BaseHormigonVerificaciones
             {
@@ -275,26 +293,41 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
 
         public BaseHormigonCuantia CalcularCuantia(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones)
         {
-            var baseHormigonCuantia = new BaseHormigonCuantia
+            var baseHormigonCuantia = new BaseHormigonCuantia();
+            if (baseHormigon.PorcentajeCargaD.Valor != 0 && baseHormigon.PorcentajeCargaL.Valor != 0)
             {
-                EsfuerzoAxilMayorado = new double[]
+                baseHormigonCuantia.EsfuerzoAxilMayorado = new double[]
                 {
             1.4 * (baseHormigon.PorcentajeCargaD.Valor / 100) * baseHormigon.EsfuerzoAxil.Valor,
             1.2 * (baseHormigon.PorcentajeCargaD.Valor / 100) * baseHormigon.EsfuerzoAxil.Valor +
             1.6 * (baseHormigon.PorcentajeCargaL.Valor / 100) * baseHormigon.EsfuerzoAxil.Valor
-                }.Max()
-            };
+                }.Max();
 
-            baseHormigonCuantia.CargaMayorada = baseHormigonCuantia.EsfuerzoAxilMayorado /
-                (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY);
+                baseHormigonCuantia.MomentoMayorado = new double[]
+                {
+            1.4 * (baseHormigon.PorcentajeCargaD.Valor / 100) * baseHormigon.MomentoX.Valor,
+            1.2 * (baseHormigon.PorcentajeCargaD.Valor / 100) * baseHormigon.MomentoX.Valor +
+            1.6 * (baseHormigon.PorcentajeCargaL.Valor / 100) * baseHormigon.MomentoX.Valor
+                }.Max();
+            } else
+            {
+                baseHormigonCuantia.EsfuerzoAxilMayorado = 1.4 * baseHormigon.EsfuerzoAxil.Valor;
+                baseHormigonCuantia.MomentoMayorado = 1.4 * baseHormigon.MomentoX.Valor;
+            }
 
-            baseHormigonCuantia.MomentoMayoradoX = baseHormigonCuantia.CargaMayorada *
-                Math.Pow(baseHormigonDimensiones.AnchoX - baseHormigon.AnchoColumnaX.Valor, 2) *
-                baseHormigonDimensiones.AnchoY / 8;
+            baseHormigonCuantia.ExcentricidadMayorada = baseHormigonCuantia.MomentoMayorado / baseHormigonCuantia.EsfuerzoAxilMayorado;
 
-            baseHormigonCuantia.MomentoMayoradoY = baseHormigonCuantia.CargaMayorada *
-                Math.Pow(baseHormigonDimensiones.AnchoY - baseHormigon.AnchoColumnaY.Valor, 2) *
-                baseHormigonDimensiones.AnchoX / 8;
+            baseHormigonCuantia.CargaMayorada1 = baseHormigonCuantia.EsfuerzoAxilMayorado * (1 + 6 * baseHormigonCuantia.ExcentricidadMayorada / baseHormigonDimensiones.AnchoX) /
+                    (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY);
+
+            baseHormigonCuantia.CargaMayorada2 = baseHormigonCuantia.EsfuerzoAxilMayorado * (1 - 6 * baseHormigonCuantia.ExcentricidadMayorada / baseHormigonDimensiones.AnchoX) /
+                    (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY);
+
+            baseHormigonCuantia.CargaMayorada = baseHormigonCuantia.CargaMayorada1 - ((baseHormigonCuantia.CargaMayorada1 - baseHormigonCuantia.CargaMayorada2) * baseHormigonDimensiones.VueloX / (2 * baseHormigonDimensiones.AnchoX));
+
+            baseHormigonCuantia.MomentoMayoradoX = baseHormigonDimensiones.AnchoY * Math.Pow(baseHormigonDimensiones.VueloX / 2, 2) * (baseHormigonCuantia.CargaMayorada + 2 * baseHormigonCuantia.CargaMayorada1) / 6;
+
+            baseHormigonCuantia.MomentoMayoradoY = baseHormigonDimensiones.AnchoX * Math.Pow(baseHormigonDimensiones.VueloY / 2, 2) * (baseHormigonCuantia.CargaMayorada1 + baseHormigonCuantia.CargaMayorada2) / 4;
 
             baseHormigonCuantia.MomentoNominalX = baseHormigonCuantia.MomentoMayoradoX / 0.9;
             baseHormigonCuantia.MomentoNominalY = baseHormigonCuantia.MomentoMayoradoY / 0.9;
@@ -425,13 +458,25 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
                                            baseHormigon.PesoEspecificoSuelo.Valor * (baseHormigon.NivelFundacion.Valor - baseHormigonDimensiones.Altura)
             };
 
-            verificacionCorte.ResistenciaRequeridaX = verificacionCorte.CargaTotal *
-                (((baseHormigonDimensiones.AnchoX - baseHormigon.AnchoColumnaX.Valor) / 2 -
-                 (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02))) * baseHormigonDimensiones.AnchoY;
+            if (baseHormigon.EsfuerzoCorteX.Valor != 0)
+            {
+                verificacionCorte.ResistenciaRequeridaX = 1.4 * baseHormigon.EsfuerzoCorteX.Valor;
+            } else
+            {
+                verificacionCorte.ResistenciaRequeridaX = verificacionCorte.CargaTotal *
+                    (((baseHormigonDimensiones.AnchoX - baseHormigon.AnchoColumnaX.Valor) / 2 -
+                     (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02))) * baseHormigonDimensiones.AnchoY;
+            }
 
-            verificacionCorte.ResistenciaRequeridaY = verificacionCorte.CargaTotal *
-                (((baseHormigonDimensiones.AnchoY - baseHormigon.AnchoColumnaY.Valor) / 2 -
-                 (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02))) * baseHormigonDimensiones.AnchoX;
+            if (baseHormigon.EsfuerzoCorteY.Valor != 0)
+            {
+                verificacionCorte.ResistenciaRequeridaY = baseHormigon.EsfuerzoCorteY.Valor;
+            } else
+            {
+                verificacionCorte.ResistenciaRequeridaY = verificacionCorte.CargaTotal *
+                    (((baseHormigonDimensiones.AnchoY - baseHormigon.AnchoColumnaY.Valor) / 2 -
+                     (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02))) * baseHormigonDimensiones.AnchoX;
+            }
 
             verificacionCorte.ResistenciaNominalX = baseHormigonDimensiones.AnchoY *
                 (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) *
