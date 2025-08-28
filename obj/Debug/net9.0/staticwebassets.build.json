@@ -1,1 +1,12 @@
-{"Version":1,"Hash":"XwkRuCmjmbJ8eRCYqWNWDcAnGq8r43kDVmkRJivG29k=","Source":"CalculoBasesAIE","BasePath":"_content/CalculoBasesAIE","Mode":"Default","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
+{
+  "Version": 1,
+  "Hash": "XwkRuCmjmbJ8eRCYqWNWDcAnGq8r43kDVmkRJivG29k=",
+  "Source": "CalculoBasesAIE",
+  "BasePath": "_content/CalculoBasesAIE",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

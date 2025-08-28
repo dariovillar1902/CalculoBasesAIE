@@ -16,7 +16,7 @@ namespace CalculoBasesAIE.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.8")
+                .HasAnnotation("ProductVersion", "9.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -80,12 +80,6 @@ namespace CalculoBasesAIE.Migrations
                     b.Property<double>("CargaMayorada")
                         .HasColumnType("float");
 
-                    b.Property<double>("CargaMayorada1")
-                        .HasColumnType("float");
-
-                    b.Property<double>("CargaMayorada2")
-                        .HasColumnType("float");
-
                     b.Property<double>("CuantiaAdoptadaX")
                         .HasColumnType("float");
 
@@ -113,16 +107,10 @@ namespace CalculoBasesAIE.Migrations
                     b.Property<double>("EsfuerzoAxilMayorado")
                         .HasColumnType("float");
 
-                    b.Property<double>("ExcentricidadMayorada")
-                        .HasColumnType("float");
-
                     b.Property<double>("FactorAdimensionalX")
                         .HasColumnType("float");
 
                     b.Property<double>("FactorAdimensionalY")
-                        .HasColumnType("float");
-
-                    b.Property<double>("MomentoMayorado")
                         .HasColumnType("float");
 
                     b.Property<double>("MomentoMayoradoX")
@@ -182,18 +170,6 @@ namespace CalculoBasesAIE.Migrations
                         .HasColumnType("float");
 
                     b.Property<double>("Area")
-                        .HasColumnType("float");
-
-                    b.Property<double>("AreaNecesaria")
-                        .HasColumnType("float");
-
-                    b.Property<double>("CargaDiseno")
-                        .HasColumnType("float");
-
-                    b.Property<double>("RelacionLados")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TensionPromedio")
                         .HasColumnType("float");
 
                     b.Property<bool>("VerificaVuelos")
@@ -282,28 +258,6 @@ namespace CalculoBasesAIE.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BasesHormigonVerificacionPunzonado");
-                });
-
-            modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonVerificaciones", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<double>("TensionX")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TensionY")
-                        .HasColumnType("float");
-
-                    b.Property<bool>("VerificaTension")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BasesHormigonVerificaciones");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigon", b =>
@@ -429,126 +383,6 @@ namespace CalculoBasesAIE.Migrations
                         });
 
                     b.OwnsOne("CalculoBasesAIE.Models.ValueUnitPair", "EsfuerzoAxil", b1 =>
-                        {
-                            b1.Property<long>("BaseHormigonId")
-                                .HasColumnType("bigint");
-
-                            b1.Property<string>("Tipo")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("Unidad")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<double>("Valor")
-                                .HasColumnType("float");
-
-                            b1.HasKey("BaseHormigonId");
-
-                            b1.ToTable("BasesHormigon");
-
-                            b1.WithOwner()
-                                .HasForeignKey("BaseHormigonId");
-                        });
-
-                    b.OwnsOne("CalculoBasesAIE.Models.ValueUnitPair", "EsfuerzoCorteX", b1 =>
-                        {
-                            b1.Property<long>("BaseHormigonId")
-                                .HasColumnType("bigint");
-
-                            b1.Property<string>("Tipo")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("Unidad")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<double>("Valor")
-                                .HasColumnType("float");
-
-                            b1.HasKey("BaseHormigonId");
-
-                            b1.ToTable("BasesHormigon");
-
-                            b1.WithOwner()
-                                .HasForeignKey("BaseHormigonId");
-                        });
-
-                    b.OwnsOne("CalculoBasesAIE.Models.ValueUnitPair", "EsfuerzoCorteY", b1 =>
-                        {
-                            b1.Property<long>("BaseHormigonId")
-                                .HasColumnType("bigint");
-
-                            b1.Property<string>("Tipo")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("Unidad")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<double>("Valor")
-                                .HasColumnType("float");
-
-                            b1.HasKey("BaseHormigonId");
-
-                            b1.ToTable("BasesHormigon");
-
-                            b1.WithOwner()
-                                .HasForeignKey("BaseHormigonId");
-                        });
-
-                    b.OwnsOne("CalculoBasesAIE.Models.ValueUnitPair", "ModuloBalastoVertical", b1 =>
-                        {
-                            b1.Property<long>("BaseHormigonId")
-                                .HasColumnType("bigint");
-
-                            b1.Property<string>("Tipo")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("Unidad")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<double>("Valor")
-                                .HasColumnType("float");
-
-                            b1.HasKey("BaseHormigonId");
-
-                            b1.ToTable("BasesHormigon");
-
-                            b1.WithOwner()
-                                .HasForeignKey("BaseHormigonId");
-                        });
-
-                    b.OwnsOne("CalculoBasesAIE.Models.ValueUnitPair", "MomentoX", b1 =>
-                        {
-                            b1.Property<long>("BaseHormigonId")
-                                .HasColumnType("bigint");
-
-                            b1.Property<string>("Tipo")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("Unidad")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<double>("Valor")
-                                .HasColumnType("float");
-
-                            b1.HasKey("BaseHormigonId");
-
-                            b1.ToTable("BasesHormigon");
-
-                            b1.WithOwner()
-                                .HasForeignKey("BaseHormigonId");
-                        });
-
-                    b.OwnsOne("CalculoBasesAIE.Models.ValueUnitPair", "MomentoY", b1 =>
                         {
                             b1.Property<long>("BaseHormigonId")
                                 .HasColumnType("bigint");
@@ -780,21 +614,6 @@ namespace CalculoBasesAIE.Migrations
                         .IsRequired();
 
                     b.Navigation("EsfuerzoAxil")
-                        .IsRequired();
-
-                    b.Navigation("EsfuerzoCorteX")
-                        .IsRequired();
-
-                    b.Navigation("EsfuerzoCorteY")
-                        .IsRequired();
-
-                    b.Navigation("ModuloBalastoVertical")
-                        .IsRequired();
-
-                    b.Navigation("MomentoX")
-                        .IsRequired();
-
-                    b.Navigation("MomentoY")
                         .IsRequired();
 
                     b.Navigation("NivelFundacion")

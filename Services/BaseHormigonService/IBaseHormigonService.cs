@@ -7,7 +7,7 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
         Task<List<BaseHormigon>> GetAllBasesAsync();
         Task<BaseHormigon?> GetBaseByIdAsync(long id);
         Task<BaseHormigonDimensiones?> GetDimensionesAsync(long id);
-        Task<BaseHormigonVerificaciones?> VerificarTensionAdmisibleAsync(long id);
+        Task<bool?> VerificarTensionAdmisibleAsync(long id);
         Task<BaseHormigonCuantia?> CalcularCuantiaAsync(long id);
         Task<BaseHormigonArmadura?> CalcularArmaduraAsync(long id);
         Task<BaseHormigonVerificacionPunzonado?> VerificarPunzonadoAsync(long id);
@@ -18,7 +18,7 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
         Task<BaseHormigonArmadura?> CalcularArmaduraConDiametrosAsync(long id, BaseHormigonDiametrosBarras nuevosDiametros);
         void ConvertirUnidades(BaseHormigon baseHormigon);
         BaseHormigonDimensiones EstimarDimensiones(BaseHormigon baseHormigon);
-        BaseHormigonVerificaciones VerificarTension(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones);
+        bool VerificarTension(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones);
         BaseHormigonCuantia CalcularCuantia(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones);
         BaseHormigonArmadura CalcularArmadura(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones, BaseHormigonCuantia baseHormigonCuantia);
         BaseHormigonVerificacionPunzonado VerificarPunzonado(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones);

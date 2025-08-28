@@ -17,15 +17,12 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
             return baseHormigon == null ? null : EstimarDimensiones(baseHormigon);
         }
 
-        public async Task<BaseHormigonVerificaciones?> VerificarTensionAdmisibleAsync(long id)
+        public async Task<bool?> VerificarTensionAdmisibleAsync(long id)
         {
             var baseHormigon = await repository.GetByIdAsync(id);
             if (baseHormigon == null) return null;
-
             var dim = EstimarDimensiones(baseHormigon);
-            var verificaciones = VerificarTension(baseHormigon, dim);
-
-            return verificaciones;
+            return VerificarTension(baseHormigon, dim);
         }
 
         public async Task<BaseHormigonCuantia?> CalcularCuantiaAsync(long id)
@@ -110,224 +107,190 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
 
         public void ConvertirUnidades(BaseHormigon baseHormigon)
         {
-            // Fuerzas → kN
+            // Se convierte la unidad a kN
             if (baseHormigon.EsfuerzoAxil.Unidad == "N")
             {
-                baseHormigon.EsfuerzoAxil.Valor /= 1000;
-                baseHormigon.EsfuerzoAxil.Unidad = "kN";
-            }
-            else if (baseHormigon.EsfuerzoAxil.Unidad == "tf")
-            {
-                baseHormigon.EsfuerzoAxil.Valor *= 9.80665;
+                baseHormigon.EsfuerzoAxil.Valor = baseHormigon.EsfuerzoAxil.Valor / 1000;
                 baseHormigon.EsfuerzoAxil.Unidad = "kN";
             }
 
-            // Presión / esfuerzo → kPa
-            void ConvertPresion(ValueUnitPair campo)
+            // Se convierte la unidad a kPa
+            if (baseHormigon.CargaAdmisible.Unidad == "MPa")
             {
-                if (campo.Unidad == "MPa")
-                {
-                    campo.Valor *= 1000;
-                    campo.Unidad = "kPa";
-                }
-                else if (campo.Unidad == "Pa")
-                {
-                    campo.Valor /= 1000;
-                    campo.Unidad = "kPa";
-                }
-                else if (campo.Unidad == "kg/cm²")
-                {
-                    campo.Valor *= 98.0665; // 1 kg/cm² = 98.0665 kPa
-                    campo.Unidad = "kPa";
-                }
+                baseHormigon.CargaAdmisible.Valor = baseHormigon.CargaAdmisible.Valor * 1000;
+                baseHormigon.CargaAdmisible.Unidad = "kPa";
+            }
+            else if (baseHormigon.CargaAdmisible.Unidad == "Pa")
+            {
+                baseHormigon.CargaAdmisible.Valor = baseHormigon.CargaAdmisible.Valor / 1000;
+                baseHormigon.CargaAdmisible.Unidad = "kPa";
             }
 
-            ConvertPresion(baseHormigon.CargaAdmisible);
-            ConvertPresion(baseHormigon.ResistenciaCaracteristicaHormigon);
-            ConvertPresion(baseHormigon.TensionFluenciaAcero);
-
-            // Porcentajes → %
+            // Se convierte la unidad a %
             if (baseHormigon.PorcentajeCargaD.Unidad == "-")
             {
-                baseHormigon.PorcentajeCargaD.Valor *= 100;
+                baseHormigon.PorcentajeCargaD.Valor = baseHormigon.PorcentajeCargaD.Valor * 100;
                 baseHormigon.PorcentajeCargaD.Unidad = "%";
             }
+
             if (baseHormigon.PorcentajeCargaL.Unidad == "-")
             {
-                baseHormigon.PorcentajeCargaL.Valor *= 100;
+                baseHormigon.PorcentajeCargaL.Valor = baseHormigon.PorcentajeCargaL.Valor * 100;
                 baseHormigon.PorcentajeCargaL.Unidad = "%";
             }
 
-            // Longitudes → m
-            void ConvertLongitud(ValueUnitPair campo)
+            // Se convierte la unidad a m
+            if (baseHormigon.AnchoColumnaX.Unidad == "cm")
             {
-                if (campo.Unidad == "cm")
-                {
-                    campo.Valor /= 100;
-                    campo.Unidad = "m";
-                }
-                else if (campo.Unidad == "mm")
-                {
-                    campo.Valor /= 1000;
-                    campo.Unidad = "m";
-                }
+                baseHormigon.AnchoColumnaX.Valor = baseHormigon.AnchoColumnaX.Valor / 100;
+                baseHormigon.AnchoColumnaX.Unidad = "m";
             }
 
-            ConvertLongitud(baseHormigon.AnchoColumnaX);
-            ConvertLongitud(baseHormigon.AnchoColumnaY);
-            ConvertLongitud(baseHormigon.NivelFundacion);
-            ConvertLongitud(baseHormigon.RecubrimientoHormigon);
-            ConvertLongitud(baseHormigon.DiametroBarrasX);
-            ConvertLongitud(baseHormigon.DiametroBarrasY);
-
-            // Densidades → kN/m³
-            void ConvertDensidad(ValueUnitPair campo)
+            if (baseHormigon.AnchoColumnaY.Unidad == "cm")
             {
-                if (campo.Unidad == "N/m³")
-                {
-                    campo.Valor /= 1000;
-                    campo.Unidad = "kN/m³";
-                }
-                else if (campo.Unidad == "kg/m³")
-                {
-                    campo.Valor *= 9.80665 / 1000; // convertir a kN/m³
-                    campo.Unidad = "kN/m³";
-                }
+                baseHormigon.AnchoColumnaY.Valor = baseHormigon.AnchoColumnaY.Valor / 100;
+                baseHormigon.AnchoColumnaY.Unidad = "m";
             }
 
-            ConvertDensidad(baseHormigon.PesoEspecificoSuelo);
-            ConvertDensidad(baseHormigon.PesoEspecificoHormigon);
-
-            // Rigidez (módulo de balasto vertical) → kN/m³
-            if (baseHormigon.ModuloBalastoVertical != null)
+            if (baseHormigon.DiametroBarrasX.Unidad == "mm")
             {
-                if (baseHormigon.ModuloBalastoVertical.Unidad == "MN/m³")
-                {
-                    baseHormigon.ModuloBalastoVertical.Valor *= 1000;
-                    baseHormigon.ModuloBalastoVertical.Unidad = "kN/m³";
-                }
+                baseHormigon.DiametroBarrasX.Valor = baseHormigon.DiametroBarrasX.Valor / 1000;
+                baseHormigon.DiametroBarrasX.Unidad = "m";
             }
 
-            // Momentos → kN·m
-            void ConvertMomento(ValueUnitPair campo)
+            if (baseHormigon.DiametroBarrasY.Unidad == "mm")
             {
-                if (campo.Unidad == "N·m")
-                {
-                    campo.Valor /= 1000; // 1 kN·m = 1000 N·m
-                    campo.Unidad = "kN·m";
-                }
-                else if (campo.Unidad == "tf·m")
-                {
-                    campo.Valor *= 9.80665; // 1 tf·m = 9.80665 kN·m
-                    campo.Unidad = "kN·m";
-                }
+                baseHormigon.DiametroBarrasY.Valor = baseHormigon.DiametroBarrasY.Valor / 1000;
+                baseHormigon.DiametroBarrasY.Unidad = "m";
             }
 
-            ConvertMomento(baseHormigon.MomentoX);
-            ConvertMomento(baseHormigon.MomentoY);
+            if (baseHormigon.DiametroBarrasX.Unidad == "cm")
+            {
+                baseHormigon.DiametroBarrasX.Valor = baseHormigon.DiametroBarrasX.Valor / 100;
+                baseHormigon.DiametroBarrasX.Unidad = "m";
+            }
+
+            if (baseHormigon.DiametroBarrasY.Unidad == "cm")
+            {
+                baseHormigon.DiametroBarrasY.Valor = baseHormigon.DiametroBarrasY.Valor / 100;
+                baseHormigon.DiametroBarrasY.Unidad = "m";
+            }
+
+            if (baseHormigon.PesoEspecificoSuelo.Unidad == "N/m3")
+            {
+                baseHormigon.PesoEspecificoSuelo.Valor = baseHormigon.PesoEspecificoSuelo.Valor / 1000;
+                baseHormigon.PesoEspecificoSuelo.Unidad = "kN/m3";
+            }
+
+            if (baseHormigon.NivelFundacion.Unidad == "cm")
+            {
+                baseHormigon.NivelFundacion.Valor = baseHormigon.NivelFundacion.Valor / 100;
+                baseHormigon.NivelFundacion.Unidad = "m";
+            }
+
+            if (baseHormigon.PesoEspecificoHormigon.Unidad == "N/m3")
+            {
+                baseHormigon.PesoEspecificoHormigon.Valor = baseHormigon.PesoEspecificoHormigon.Valor / 1000;
+                baseHormigon.PesoEspecificoHormigon.Unidad = "kN/m3";
+            }
+
+            if (baseHormigon.ResistenciaCaracteristicaHormigon.Unidad == "MPa")
+            {
+                baseHormigon.ResistenciaCaracteristicaHormigon.Valor = baseHormigon.ResistenciaCaracteristicaHormigon.Valor * 1000;
+                baseHormigon.ResistenciaCaracteristicaHormigon.Unidad = "kPa";
+            }
+            else if (baseHormigon.ResistenciaCaracteristicaHormigon.Unidad == "Pa")
+            {
+                baseHormigon.ResistenciaCaracteristicaHormigon.Valor = baseHormigon.ResistenciaCaracteristicaHormigon.Valor / 1000;
+                baseHormigon.ResistenciaCaracteristicaHormigon.Unidad = "kPa";
+            }
+
+            if (baseHormigon.RecubrimientoHormigon.Unidad == "cm")
+            {
+                baseHormigon.RecubrimientoHormigon.Valor = baseHormigon.RecubrimientoHormigon.Valor / 100;
+                baseHormigon.RecubrimientoHormigon.Unidad = "m";
+            }
+
+            if (baseHormigon.TensionFluenciaAcero.Unidad == "MPa")
+            {
+                baseHormigon.TensionFluenciaAcero.Valor = baseHormigon.TensionFluenciaAcero.Valor * 1000;
+                baseHormigon.TensionFluenciaAcero.Unidad = "kPa";
+            }
+            else if (baseHormigon.TensionFluenciaAcero.Unidad == "Pa")
+            {
+                baseHormigon.TensionFluenciaAcero.Valor = baseHormigon.TensionFluenciaAcero.Valor / 1000;
+                baseHormigon.TensionFluenciaAcero.Unidad = "kPa";
+            }
         }
 
         public BaseHormigonDimensiones EstimarDimensiones(BaseHormigon baseHormigon)
         {
-            var dimensiones = new BaseHormigonDimensiones
+            var baseHormigonDimensiones = new BaseHormigonDimensiones
             {
-                // 1. Carga de diseño
-                CargaDiseno = 1.10 * baseHormigon.EsfuerzoAxil.Valor,
-
-                // 2. Tensión promedio admisible
-                TensionPromedio = 0.65 * 1.25 * baseHormigon.CargaAdmisible.Valor
+                Area = 1.05 * baseHormigon.EsfuerzoAxil.Valor /
+                       (baseHormigon.CargaAdmisible.Valor - baseHormigon.PesoEspecificoSuelo.Valor * baseHormigon.NivelFundacion.Valor)
             };
 
-            // 3. Área necesaria
-            dimensiones.AreaNecesaria = dimensiones.CargaDiseno / dimensiones.TensionPromedio;
+            baseHormigonDimensiones.AnchoX = Math.Sqrt(baseHormigonDimensiones.Area +
+                    (Math.Pow(baseHormigon.AnchoColumnaX.Valor - baseHormigon.AnchoColumnaY.Valor, 2)) / 4)
+                    + (baseHormigon.AnchoColumnaX.Valor - baseHormigon.AnchoColumnaY.Valor) / 2;
 
-            // 4. Dimensiones base siguiendo relación AnchoX / AnchoY = 1.5
-            dimensiones.RelacionLados = 1.5;
-            dimensiones.AnchoY = Math.Sqrt(dimensiones.AreaNecesaria / dimensiones.RelacionLados);
-            dimensiones.AnchoX = dimensiones.RelacionLados * dimensiones.AnchoY;
+            baseHormigonDimensiones.AnchoY = Math.Sqrt(baseHormigonDimensiones.Area +
+                    (Math.Pow(baseHormigon.AnchoColumnaX.Valor - baseHormigon.AnchoColumnaY.Valor, 2)) / 4)
+                    - (baseHormigon.AnchoColumnaX.Valor - baseHormigon.AnchoColumnaY.Valor) / 2;
 
-            // 5. Ajuste a múltiplos de 0.1 m
-            dimensiones.AnchoX = Math.Ceiling(dimensiones.AnchoX * 20) / 20;
-            dimensiones.AnchoY = Math.Ceiling(dimensiones.AnchoY * 20) / 20;
+            baseHormigonDimensiones.AnchoX = Math.Ceiling(baseHormigonDimensiones.AnchoX * 10) / 10;
+            baseHormigonDimensiones.AnchoY = Math.Ceiling(baseHormigonDimensiones.AnchoY * 10) / 10;
 
-            // 6. Vuelos
-            dimensiones.VueloX = dimensiones.AnchoX - baseHormigon.AnchoColumnaX.Valor;
-            dimensiones.VueloY = dimensiones.AnchoY - baseHormigon.AnchoColumnaY.Valor;
-            dimensiones.VerificaVuelos = Math.Abs(dimensiones.VueloX - dimensiones.VueloY) < 0.2;
+            baseHormigonDimensiones.VueloX = baseHormigonDimensiones.AnchoX - baseHormigon.AnchoColumnaX.Valor;
+            baseHormigonDimensiones.VueloY = baseHormigonDimensiones.AnchoY - baseHormigon.AnchoColumnaY.Valor;
+            baseHormigonDimensiones.VerificaVuelos = Math.Abs(baseHormigonDimensiones.VueloX - baseHormigonDimensiones.VueloY) < 0.2;
 
-            // 7. Altura mínima según relación de vuelo
-            double[] alturas =
-            [
-        dimensiones.VueloX / 5,
-        dimensiones.VueloY / 5,
-        0.25 // altura mínima sugerida por norma
-            ];
-            dimensiones.Altura = Math.Ceiling(alturas.Max() * 20) / 20;
+            var condicionesAltura = new double[]
+            {
+        (baseHormigonDimensiones.AnchoX - baseHormigon.AnchoColumnaX.Valor) / 5,
+        (baseHormigonDimensiones.AnchoY - baseHormigon.AnchoColumnaY.Valor) / 5,
+        0.25
+            };
 
-            // 8. Área final
-            dimensiones.Area = dimensiones.AnchoX * dimensiones.AnchoY;
+            baseHormigonDimensiones.Altura = Math.Ceiling(condicionesAltura.Max() * 20) / 20;
 
-            return dimensiones;
+            return baseHormigonDimensiones;
         }
 
-        public BaseHormigonVerificaciones VerificarTension(BaseHormigon baseHormigon, BaseHormigonDimensiones dimensiones)
+
+        public bool VerificarTension(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones)
         {
-            // Excentricidades
-            double ex = baseHormigon.MomentoX.Valor / dimensiones.CargaDiseno; // en metros
-            double ey = baseHormigon.MomentoY.Valor / dimensiones.CargaDiseno; // en metros
+            var cargaTotal = baseHormigon.EsfuerzoAxil.Valor /
+                             (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY) +
+                             baseHormigon.PesoEspecificoHormigon.Valor * baseHormigonDimensiones.Altura +
+                             baseHormigon.PesoEspecificoSuelo.Valor * (baseHormigon.NivelFundacion.Valor - baseHormigonDimensiones.Altura);
 
-            // Tensiones ajustadas por excentricidad
-            double tensionX = dimensiones.CargaDiseno * (1 + 6 * ex / dimensiones.AnchoX) / (dimensiones.AnchoX * dimensiones.AnchoY);
-            double tensionY = dimensiones.CargaDiseno * (1 - 6 * ex / dimensiones.AnchoX) / (dimensiones.AnchoX * dimensiones.AnchoY);
-
-            // Verificación máxima
-            bool dentroLimite = Math.Max(tensionX, tensionY) < 1.25 * baseHormigon.CargaAdmisible.Valor;
-
-            return new BaseHormigonVerificaciones
-            {
-                TensionX = tensionX,
-                TensionY = tensionY,
-                VerificaTension = dentroLimite
-            };
+            return cargaTotal < baseHormigon.CargaAdmisible.Valor;
         }
 
         public BaseHormigonCuantia CalcularCuantia(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones)
         {
-            var baseHormigonCuantia = new BaseHormigonCuantia();
-            if (baseHormigon.PorcentajeCargaD.Valor != 0 && baseHormigon.PorcentajeCargaL.Valor != 0)
+            var baseHormigonCuantia = new BaseHormigonCuantia
             {
-                baseHormigonCuantia.EsfuerzoAxilMayorado = new double[]
+                EsfuerzoAxilMayorado = new double[]
                 {
             1.4 * (baseHormigon.PorcentajeCargaD.Valor / 100) * baseHormigon.EsfuerzoAxil.Valor,
             1.2 * (baseHormigon.PorcentajeCargaD.Valor / 100) * baseHormigon.EsfuerzoAxil.Valor +
             1.6 * (baseHormigon.PorcentajeCargaL.Valor / 100) * baseHormigon.EsfuerzoAxil.Valor
-                }.Max();
+                }.Max()
+            };
 
-                baseHormigonCuantia.MomentoMayorado = new double[]
-                {
-            1.4 * (baseHormigon.PorcentajeCargaD.Valor / 100) * baseHormigon.MomentoX.Valor,
-            1.2 * (baseHormigon.PorcentajeCargaD.Valor / 100) * baseHormigon.MomentoX.Valor +
-            1.6 * (baseHormigon.PorcentajeCargaL.Valor / 100) * baseHormigon.MomentoX.Valor
-                }.Max();
-            } else
-            {
-                baseHormigonCuantia.EsfuerzoAxilMayorado = 1.4 * baseHormigon.EsfuerzoAxil.Valor;
-                baseHormigonCuantia.MomentoMayorado = 1.4 * baseHormigon.MomentoX.Valor;
-            }
+            baseHormigonCuantia.CargaMayorada = baseHormigonCuantia.EsfuerzoAxilMayorado /
+                (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY);
 
-            baseHormigonCuantia.ExcentricidadMayorada = baseHormigonCuantia.MomentoMayorado / baseHormigonCuantia.EsfuerzoAxilMayorado;
+            baseHormigonCuantia.MomentoMayoradoX = baseHormigonCuantia.CargaMayorada *
+                Math.Pow(baseHormigonDimensiones.AnchoX - baseHormigon.AnchoColumnaX.Valor, 2) *
+                baseHormigonDimensiones.AnchoY / 8;
 
-            baseHormigonCuantia.CargaMayorada1 = baseHormigonCuantia.EsfuerzoAxilMayorado * (1 + 6 * baseHormigonCuantia.ExcentricidadMayorada / baseHormigonDimensiones.AnchoX) /
-                    (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY);
-
-            baseHormigonCuantia.CargaMayorada2 = baseHormigonCuantia.EsfuerzoAxilMayorado * (1 - 6 * baseHormigonCuantia.ExcentricidadMayorada / baseHormigonDimensiones.AnchoX) /
-                    (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY);
-
-            baseHormigonCuantia.CargaMayorada = baseHormigonCuantia.CargaMayorada1 - ((baseHormigonCuantia.CargaMayorada1 - baseHormigonCuantia.CargaMayorada2) * baseHormigonDimensiones.VueloX / (2 * baseHormigonDimensiones.AnchoX));
-
-            baseHormigonCuantia.MomentoMayoradoX = baseHormigonDimensiones.AnchoY * Math.Pow(baseHormigonDimensiones.VueloX / 2, 2) * (baseHormigonCuantia.CargaMayorada + 2 * baseHormigonCuantia.CargaMayorada1) / 6;
-
-            baseHormigonCuantia.MomentoMayoradoY = baseHormigonDimensiones.AnchoX * Math.Pow(baseHormigonDimensiones.VueloY / 2, 2) * (baseHormigonCuantia.CargaMayorada1 + baseHormigonCuantia.CargaMayorada2) / 4;
+            baseHormigonCuantia.MomentoMayoradoY = baseHormigonCuantia.CargaMayorada *
+                Math.Pow(baseHormigonDimensiones.AnchoY - baseHormigon.AnchoColumnaY.Valor, 2) *
+                baseHormigonDimensiones.AnchoX / 8;
 
             baseHormigonCuantia.MomentoNominalX = baseHormigonCuantia.MomentoMayoradoX / 0.9;
             baseHormigonCuantia.MomentoNominalY = baseHormigonCuantia.MomentoMayoradoY / 0.9;
@@ -458,25 +421,13 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
                                            baseHormigon.PesoEspecificoSuelo.Valor * (baseHormigon.NivelFundacion.Valor - baseHormigonDimensiones.Altura)
             };
 
-            if (baseHormigon.EsfuerzoCorteX.Valor != 0)
-            {
-                verificacionCorte.ResistenciaRequeridaX = 1.4 * baseHormigon.EsfuerzoCorteX.Valor;
-            } else
-            {
-                verificacionCorte.ResistenciaRequeridaX = verificacionCorte.CargaTotal *
-                    (((baseHormigonDimensiones.AnchoX - baseHormigon.AnchoColumnaX.Valor) / 2 -
-                     (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02))) * baseHormigonDimensiones.AnchoY;
-            }
+            verificacionCorte.ResistenciaRequeridaX = verificacionCorte.CargaTotal *
+                (((baseHormigonDimensiones.AnchoX - baseHormigon.AnchoColumnaX.Valor) / 2 -
+                 (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02))) * baseHormigonDimensiones.AnchoY;
 
-            if (baseHormigon.EsfuerzoCorteY.Valor != 0)
-            {
-                verificacionCorte.ResistenciaRequeridaY = baseHormigon.EsfuerzoCorteY.Valor;
-            } else
-            {
-                verificacionCorte.ResistenciaRequeridaY = verificacionCorte.CargaTotal *
-                    (((baseHormigonDimensiones.AnchoY - baseHormigon.AnchoColumnaY.Valor) / 2 -
-                     (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02))) * baseHormigonDimensiones.AnchoX;
-            }
+            verificacionCorte.ResistenciaRequeridaY = verificacionCorte.CargaTotal *
+                (((baseHormigonDimensiones.AnchoY - baseHormigon.AnchoColumnaY.Valor) / 2 -
+                 (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02))) * baseHormigonDimensiones.AnchoX;
 
             verificacionCorte.ResistenciaNominalX = baseHormigonDimensiones.AnchoY *
                 (baseHormigonDimensiones.Altura - baseHormigon.RecubrimientoHormigon.Valor - 0.02) *

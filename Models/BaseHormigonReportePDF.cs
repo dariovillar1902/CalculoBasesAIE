@@ -10,7 +10,7 @@ namespace CalculoBasesAIE.Models
         BaseHormigonArmadura armadura,
         BaseHormigonVerificacionPunzonado punzonado,
         BaseHormigonVerificacionCorte corte,
-        BaseHormigonVerificaciones verificaTension) : IDocument
+        bool verificaTension) : IDocument
     {
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
 
@@ -30,7 +30,6 @@ namespace CalculoBasesAIE.Models
                 {
                     col.Spacing(8);
 
-                    // DATOS GEOMÉTRICOS
                     col.Item().Text("Datos Geométricos").Bold();
                     col.Item().Table(t =>
                     {
@@ -40,22 +39,12 @@ namespace CalculoBasesAIE.Models
                         AddRow(t, "Ancho X", dimensiones.AnchoX.ToString("0.00"), "m");
                         AddRow(t, "Ancho Y", dimensiones.AnchoY.ToString("0.00"), "m");
                         AddRow(t, "Altura", dimensiones.Altura.ToString("0.00"), "m");
-                        AddRow(t, "Vuelo X", dimensiones.VueloX.ToString("0.00"), "m");
-                        AddRow(t, "Vuelo Y", dimensiones.VueloY.ToString("0.00"), "m");
                         AddRow(t, "Verifica Vuelos", dimensiones.VerificaVuelos ? "Sí" : "No");
                     });
 
-                    // TENSIONES
                     col.Item().Text("Verificación de Tensión Admisible").Bold();
-                    col.Item().Table(t =>
-                    {
-                        t.ColumnsDefinition(c => c.ConstantColumn(200));
-                        AddRow(t, "Tensión X", verificaTension.TensionX.ToString("0.00"), "kPa");
-                        AddRow(t, "Tensión Y", verificaTension.TensionY.ToString("0.00"), "kPa");
-                        AddRow(t, "Resultado", verificaTension.VerificaTension ? "Cumple" : "No cumple");
-                    });
+                    col.Item().Text(verificaTension ? "Cumple" : "No cumple");
 
-                    // CUANTÍA
                     col.Item().Text("Cálculo de Cuantía").Bold();
                     col.Item().Table(t =>
                     {
@@ -68,7 +57,6 @@ namespace CalculoBasesAIE.Models
                         AddRow(t, "Área Acero Y", cuantia.AreaAceroY.ToString("0.00"), "cm²");
                     });
 
-                    // PUNZONADO
                     col.Item().Text("Verificación de Punzonado").Bold();
                     col.Item().Table(t =>
                     {
@@ -82,7 +70,6 @@ namespace CalculoBasesAIE.Models
                         AddRow(t, "Resultado", punzonado.CumpleVerificacion ? "Cumple" : "No cumple");
                     });
 
-                    // CORTE
                     col.Item().Text("Verificación de Corte").Bold();
                     col.Item().Table(t =>
                     {
@@ -97,7 +84,6 @@ namespace CalculoBasesAIE.Models
                         AddRow(t, "Resultado", corte.CumpleVerificacion ? "Cumple" : "No cumple");
                     });
 
-                    // ARMADURA
                     col.Item().Text("Detalles de Armadura").Bold();
                     col.Item().Table(t =>
                     {
