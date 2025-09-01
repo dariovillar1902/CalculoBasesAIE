@@ -3,6 +3,7 @@ using CalculoBasesAIE.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CalculoBasesAIE.Migrations
 {
     [DbContext(typeof(BaseHormigonContext))]
-    partial class BaseHormigonContextModelSnapshot : ModelSnapshot
+    [Migration("20250831212752_AgregarEsfuerzosYVerificacionesBase")]
+    partial class AgregarEsfuerzosYVerificacionesBase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,7 +38,7 @@ namespace CalculoBasesAIE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigon", (string)null);
+                    b.ToTable("BasesHormigon");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonArmadura", b =>
@@ -60,7 +63,7 @@ namespace CalculoBasesAIE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonArmaduras", (string)null);
+                    b.ToTable("BasesHormigonArmaduras");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonCuantia", b =>
@@ -130,7 +133,7 @@ namespace CalculoBasesAIE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonCuantias", (string)null);
+                    b.ToTable("BasesHormigonCuantias");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonDiametrosBarras", b =>
@@ -149,7 +152,7 @@ namespace CalculoBasesAIE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonDiametrosBarras", (string)null);
+                    b.ToTable("BasesHormigonDiametrosBarras");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonDimensiones", b =>
@@ -183,7 +186,7 @@ namespace CalculoBasesAIE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonDimensiones", (string)null);
+                    b.ToTable("BasesHormigonDimensiones");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonEsfuerzos", b =>
@@ -211,7 +214,7 @@ namespace CalculoBasesAIE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonEsfuerzos", (string)null);
+                    b.ToTable("BasesHormigonEsfuerzos");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonVerificacionCorte", b =>
@@ -248,7 +251,7 @@ namespace CalculoBasesAIE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonVerificacionCorte", (string)null);
+                    b.ToTable("BasesHormigonVerificacionCorte");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonVerificacionPunzonado", b =>
@@ -285,7 +288,7 @@ namespace CalculoBasesAIE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonVerificacionPunzonado", (string)null);
+                    b.ToTable("BasesHormigonVerificacionPunzonado");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonVerificaciones", b =>
@@ -349,7 +352,7 @@ namespace CalculoBasesAIE.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonVerificaciones", (string)null);
+                    b.ToTable("BasesHormigonVerificaciones");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigon", b =>
@@ -372,7 +375,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -396,7 +399,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -420,7 +423,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -444,7 +447,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -468,7 +471,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -492,7 +495,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -516,7 +519,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -540,7 +543,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -564,7 +567,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -588,7 +591,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -612,7 +615,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -636,7 +639,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -660,7 +663,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -684,7 +687,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -708,7 +711,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -732,7 +735,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -756,7 +759,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -780,7 +783,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -804,7 +807,7 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon", (string)null);
+                            b1.ToTable("BasesHormigon");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");

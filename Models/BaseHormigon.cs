@@ -18,5 +18,10 @@
         public ValueUnitPair TensionFluenciaAcero { get; set; }
         public ValueUnitPair DiametroBarrasX { get; set; }
         public ValueUnitPair DiametroBarrasY {  get; set; }
+        public ValueUnitPair CorteX { get; set; }
+        public ValueUnitPair CorteY { get; set; }
+        public ValueUnitPair MomentoX { get; set; }
+        public ValueUnitPair MomentoY { get; set; }
+        public ValueUnitPair ModuloBalasto { get; set; }
     }
 }

@@ -36,10 +36,17 @@ namespace CalculoBasesAIE.Controllers
             return dim is null ? NotFound() : Ok(dim);
         }
 
-        [HttpGet("{id}/verificaTensionAdmisible")]
-        public async Task<ActionResult<bool>> GetVerificaTensionAdmisible(long id)
+        [HttpGet("{id}/esfuerzosBase")]
+        public async Task<ActionResult<BaseHormigonEsfuerzos>> GetEsfuerzosBase(long id)
         {
-            var result = await _baseHormigonService.VerificarTensionAdmisibleAsync(id);
+            var result = await _baseHormigonService.GetEsfuerzosAsync(id);
+            return result is null ? NotFound() : Ok(result);
+        }
+
+        [HttpGet("{id}/verificacionesBase")]
+        public async Task<ActionResult<BaseHormigonVerificaciones>> GetVerificacionesBase(long id)
+        {
+            var result = await _baseHormigonService.VerificarBaseAsync(id);
             return result is null ? NotFound() : Ok(result);
         }
 

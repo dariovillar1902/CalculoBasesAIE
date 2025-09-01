@@ -6,6 +6,8 @@ namespace CalculoBasesAIE.Models
     {
         public DbSet<BaseHormigon> BasesHormigon { get; set; }
         public DbSet<BaseHormigonDimensiones> BasesHormigonDimensiones { get; set; }
+        public DbSet<BaseHormigonEsfuerzos> BasesHormigonEsfuerzos { get; set; }
+        public DbSet<BaseHormigonVerificaciones> BasesHormigonVerificaciones { get; set; }
         public DbSet<BaseHormigonArmadura> BasesHormigonArmaduras { get; set; }
         public DbSet<BaseHormigonCuantia> BasesHormigonCuantias { get; set; }
         public DbSet<BaseHormigonDiametrosBarras> BasesHormigonDiametrosBarras { get; set; }
@@ -31,6 +33,11 @@ namespace CalculoBasesAIE.Models
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.TensionFluenciaAcero);
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.DiametroBarrasX);
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.DiametroBarrasY);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.MomentoX);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.MomentoY);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CorteX);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CorteY);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.ModuloBalasto);
         }
     }
 }

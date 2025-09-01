@@ -108,7 +108,12 @@ namespace CalculoBasesAIE.Repositories.BaseHormigonRepository
                 e.TensionFluenciaAcero.Valor == baseHormigon.TensionFluenciaAcero.Valor &&
                 e.DiametroBarrasX.Valor == baseHormigon.DiametroBarrasX.Valor &&
                 e.DiametroBarrasY.Valor == baseHormigon.DiametroBarrasY.Valor &&
-                e.RecubrimientoHormigon.Valor == baseHormigon.RecubrimientoHormigon.Valor
+                e.RecubrimientoHormigon.Valor == baseHormigon.RecubrimientoHormigon.Valor &&
+                e.CorteX.Valor == baseHormigon.CorteX.Valor && 
+                e.CorteY.Valor == baseHormigon.CorteY.Valor &&
+                e.MomentoX.Valor == baseHormigon.MomentoX.Valor &&
+                e.MomentoY.Valor == baseHormigon.MomentoY.Valor &&
+                e.ModuloBalasto.Valor == baseHormigon.ModuloBalasto.Valor
             );
         }
     }

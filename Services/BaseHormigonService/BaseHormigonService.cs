@@ -17,12 +17,21 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
             return baseHormigon == null ? null : EstimarDimensiones(baseHormigon);
         }
 
-        public async Task<bool?> VerificarTensionAdmisibleAsync(long id)
+        public async Task<BaseHormigonEsfuerzos?> GetEsfuerzosAsync(long id)
         {
             var baseHormigon = await repository.GetByIdAsync(id);
             if (baseHormigon == null) return null;
             var dim = EstimarDimensiones(baseHormigon);
-            return VerificarTension(baseHormigon, dim);
+            return ObtenerEsfuerzos(baseHormigon, dim);
+        }
+
+        public async Task<BaseHormigonVerificaciones?> VerificarBaseAsync(long id)
+        {
+            var baseHormigon = await repository.GetByIdAsync(id);
+            if (baseHormigon == null) return null;
+            var dim = EstimarDimensiones(baseHormigon);
+            var esfuerzos = ObtenerEsfuerzos(baseHormigon, dim);
+            return VerificarBase(baseHormigon, dim, esfuerzos);
         }
 
         public async Task<BaseHormigonCuantia?> CalcularCuantiaAsync(long id)
@@ -256,6 +265,97 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
             baseHormigonDimensiones.Altura = Math.Ceiling(condicionesAltura.Max() * 20) / 20;
 
             return baseHormigonDimensiones;
+        }
+
+        public BaseHormigonEsfuerzos ObtenerEsfuerzos(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones)
+        {
+            var baseHormigonEsfuerzos = new BaseHormigonEsfuerzos
+            {
+                Normal = baseHormigon.EsfuerzoAxil.Valor +
+                baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY * baseHormigonDimensiones.Altura * baseHormigon.PesoEspecificoHormigon.Valor +
+                baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY * (baseHormigon.NivelFundacion.Valor - baseHormigonDimensiones.Altura) * baseHormigon.PesoEspecificoSuelo.Valor,
+                
+                MomentoX = baseHormigon.MomentoX.Valor + baseHormigon.CorteX.Valor * baseHormigonDimensiones.Altura,
+                MomentoY = baseHormigon.MomentoY.Valor + baseHormigon.CorteY.Valor * baseHormigonDimensiones.Altura,
+
+                CorteX = baseHormigon.CorteX.Valor,
+                CorteY = baseHormigon.CorteY.Valor
+            };
+
+            return baseHormigonEsfuerzos;
+        }
+
+        public BaseHormigonVerificaciones VerificarBase(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones, BaseHormigonEsfuerzos baseHormigonEsfuerzos)
+        {
+            var baseHormigonVerificaciones = new BaseHormigonVerificaciones
+            {
+                CoeficienteSeguridadVuelco = Math.Min((baseHormigonEsfuerzos.Normal * baseHormigonDimensiones.AnchoX / 2) / baseHormigonEsfuerzos.MomentoX,
+                baseHormigonEsfuerzos.Normal * baseHormigonDimensiones.AnchoY / 2) / baseHormigonEsfuerzos.MomentoY
+            };
+
+            baseHormigonVerificaciones.VerificaVuelco = baseHormigonVerificaciones.CoeficienteSeguridadVuelco >= 1.5;
+
+            baseHormigonVerificaciones.ExcentricidadX = baseHormigonEsfuerzos.MomentoX / baseHormigonEsfuerzos.Normal;
+            baseHormigonVerificaciones.ExcentricidadY = baseHormigonEsfuerzos.MomentoY / baseHormigonEsfuerzos.Normal;
+
+            if (baseHormigonVerificaciones.ExcentricidadX == 0)
+            {
+                baseHormigonVerificaciones.TensionMaximaX = baseHormigonEsfuerzos.Normal / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY);
+                baseHormigonVerificaciones.TensionMinimaX = baseHormigonEsfuerzos.Normal / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY);
+            } else if (baseHormigonVerificaciones.ExcentricidadX <= baseHormigonDimensiones.AnchoX / 6)
+            {
+                baseHormigonVerificaciones.TensionMaximaX = baseHormigonEsfuerzos.Normal / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY) *
+                    (1 + 6 * baseHormigonVerificaciones.ExcentricidadX / baseHormigonDimensiones.AnchoX);
+                baseHormigonVerificaciones.TensionMinimaX = baseHormigonEsfuerzos.Normal / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY) *
+                    (1 - 6 * baseHormigonVerificaciones.ExcentricidadX / baseHormigonDimensiones.AnchoX);
+            } else if (baseHormigonVerificaciones.ExcentricidadX > baseHormigonDimensiones.AnchoX / 6)
+            {
+                baseHormigonVerificaciones.TensionMaximaX = 4 * baseHormigonEsfuerzos.Normal / (3 * (baseHormigonDimensiones.AnchoX - 2 * baseHormigonVerificaciones.ExcentricidadX) * baseHormigonDimensiones.AnchoY);
+                baseHormigonVerificaciones.TensionMinimaX = 0;
+            }
+
+            if (baseHormigonVerificaciones.ExcentricidadY == 0)
+            {
+                baseHormigonVerificaciones.TensionMaximaY = baseHormigonEsfuerzos.Normal / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY);
+                baseHormigonVerificaciones.TensionMinimaY = baseHormigonEsfuerzos.Normal / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY);
+            }
+            else if (baseHormigonVerificaciones.ExcentricidadY <= baseHormigonDimensiones.AnchoY / 6)
+            {
+                baseHormigonVerificaciones.TensionMaximaY = baseHormigonEsfuerzos.Normal / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY) *
+                    (1 + 6 * baseHormigonVerificaciones.ExcentricidadY / baseHormigonDimensiones.AnchoY);
+                baseHormigonVerificaciones.TensionMinimaY = baseHormigonEsfuerzos.Normal / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY) *
+                    (1 - 6 * baseHormigonVerificaciones.ExcentricidadY / baseHormigonDimensiones.AnchoY);
+            }
+            else if (baseHormigonVerificaciones.ExcentricidadY > baseHormigonDimensiones.AnchoY / 6)
+            {
+                baseHormigonVerificaciones.TensionMaximaY = 4 * baseHormigonEsfuerzos.Normal / (3 * (baseHormigonDimensiones.AnchoY - 2 * baseHormigonVerificaciones.ExcentricidadY) * baseHormigonDimensiones.AnchoX);
+                baseHormigonVerificaciones.TensionMinimaY = 0;
+            }
+
+            baseHormigonVerificaciones.VerificaTensionAdmisible = baseHormigonVerificaciones.TensionMaximaX <= 1.25 * baseHormigon.CargaAdmisible.Valor &&
+                baseHormigonVerificaciones.TensionMaximaY <= 1.25 * baseHormigon.CargaAdmisible.Valor &&
+                (baseHormigonVerificaciones.TensionMaximaX + baseHormigonVerificaciones.TensionMinimaX) / 2 <= baseHormigon.CargaAdmisible.Valor &&
+                (baseHormigonVerificaciones.TensionMaximaY + baseHormigonVerificaciones.TensionMinimaY) / 2 <= baseHormigon.CargaAdmisible.Valor;
+
+            baseHormigonVerificaciones.AsentamientoMedio = baseHormigonEsfuerzos.Normal / (baseHormigon.ModuloBalasto.Valor * baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY);
+            baseHormigonVerificaciones.AsentamientoMaximo = (1 / baseHormigon.ModuloBalasto.Valor) *
+                (baseHormigonEsfuerzos.Normal / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY) +
+                6 * baseHormigon.MomentoX.Valor / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY * baseHormigonDimensiones.AnchoY) +
+                6 * baseHormigon.MomentoY.Valor / (baseHormigonDimensiones.AnchoY * baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoX));
+
+            baseHormigonVerificaciones.AsentamientoMinimo = (1 / baseHormigon.ModuloBalasto.Valor) *
+                (baseHormigonEsfuerzos.Normal / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY) -
+                6 * baseHormigon.MomentoX.Valor / (baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY * baseHormigonDimensiones.AnchoY) -
+                6 * baseHormigon.MomentoY.Valor / (baseHormigonDimensiones.AnchoY * baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoX));
+
+            baseHormigonVerificaciones.VerificaAsentamientoMedio = baseHormigonVerificaciones.AsentamientoMedio <= 0.035;
+
+            baseHormigonVerificaciones.DistorsionAngular = (baseHormigonVerificaciones.AsentamientoMaximo - baseHormigonVerificaciones.AsentamientoMinimo) /
+                Math.Sqrt(Math.Pow(baseHormigonDimensiones.AnchoX, 2) + Math.Pow(baseHormigonDimensiones.AnchoY, 2));
+
+            baseHormigonVerificaciones.VerificaAsentamientoDiferencial = baseHormigonVerificaciones.DistorsionAngular <= 0.002;
+
+            return baseHormigonVerificaciones;
         }
 
 
