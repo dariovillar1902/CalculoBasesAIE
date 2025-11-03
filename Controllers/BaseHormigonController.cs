@@ -78,6 +78,13 @@ namespace CalculoBasesAIE.Controllers
             return result is null ? NotFound() : Ok(result);
         }
 
+        [HttpGet("{id}/computo")]
+        public async Task<ActionResult<BaseHormigonComputo>> GetComputo(long id)
+        {
+            var computo = await _baseHormigonService.ComputoAsync(id);
+            return computo is null ? NotFound() : Ok(computo);
+        }
+
         [HttpPost]
         public async Task<ActionResult<BaseHormigon>> PostBaseHormigon(BaseHormigon baseHormigon)
         {

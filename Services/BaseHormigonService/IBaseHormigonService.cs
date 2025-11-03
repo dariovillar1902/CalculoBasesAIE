@@ -11,6 +11,7 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
         Task<BaseHormigonVerificaciones?> VerificarBaseAsync(long id);
         Task<BaseHormigonCuantia?> CalcularCuantiaAsync(long id);
         Task<BaseHormigonArmadura?> CalcularArmaduraAsync(long id);
+        Task<BaseHormigonComputo?> ComputoAsync(long id);
         Task<BaseHormigonVerificacionPunzonado?> VerificarPunzonadoAsync(long id);
         Task<BaseHormigonVerificacionCorte?> VerificarCorteAsync(long id);
         Task<BaseHormigon?> CreateAsync(BaseHormigon baseHormigon);
@@ -26,5 +27,6 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
         BaseHormigonArmadura CalcularArmadura(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones, BaseHormigonCuantia baseHormigonCuantia);
         BaseHormigonVerificacionPunzonado VerificarPunzonado(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones);
         BaseHormigonVerificacionCorte VerificarCorte(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones);
+        BaseHormigonComputo Computo(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones, BaseHormigonArmadura baseHormigonArmadura);
     }
 }

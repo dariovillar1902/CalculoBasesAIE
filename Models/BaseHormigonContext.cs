@@ -13,6 +13,7 @@ namespace CalculoBasesAIE.Models
         public DbSet<BaseHormigonDiametrosBarras> BasesHormigonDiametrosBarras { get; set; }
         public DbSet<BaseHormigonVerificacionCorte> BasesHormigonVerificacionCorte { get; set; }
         public DbSet<BaseHormigonVerificacionPunzonado> BasesHormigonVerificacionPunzonado { get; set; }
+        public DbSet<BaseHormigonComputo> BasesHormigonComputos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,6 +39,10 @@ namespace CalculoBasesAIE.Models
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CorteX);
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CorteY);
             modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.ModuloBalasto);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CostoM3Hormigon);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CostoKgAcero);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CostoM3Excavacion);
+            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CoeficienteEsponjamiento);
         }
     }
 }

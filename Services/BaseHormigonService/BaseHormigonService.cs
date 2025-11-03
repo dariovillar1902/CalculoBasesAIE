@@ -51,6 +51,16 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
             return CalcularArmadura(baseHormigon, dim, cuantia);
         }
 
+        public async Task<BaseHormigonComputo?> ComputoAsync(long id)
+        {
+            var baseHormigon = await repository.GetByIdAsync(id);
+            if (baseHormigon == null) return null;
+            var dim = EstimarDimensiones(baseHormigon);
+            var cuantia = CalcularCuantia(baseHormigon, dim);
+            var armadura = CalcularArmadura(baseHormigon, dim, cuantia);
+            return Computo(baseHormigon, dim, armadura);
+        }
+
         public async Task<BaseHormigonVerificacionPunzonado?> VerificarPunzonadoAsync(long id)
         {
             var baseHormigon = await repository.GetByIdAsync(id);
@@ -544,6 +554,42 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
                                                    verificacionCorte.ResistenciaRequeridaY <= verificacionCorte.ResistenciaDisenoY;
 
             return verificacionCorte;
+        }
+
+        public BaseHormigonComputo Computo(BaseHormigon baseHormigon, BaseHormigonDimensiones baseHormigonDimensiones, BaseHormigonArmadura baseHormigonArmadura)
+        {
+            var volumenHormigon = baseHormigonDimensiones.AnchoX * baseHormigonDimensiones.AnchoY * baseHormigonDimensiones.Altura;
+
+            var longitudBarrasX = baseHormigonArmadura.CantidadBarrasX * (baseHormigonDimensiones.AnchoX + 0.5);
+            var longitudBarrasY = baseHormigonArmadura.CantidadBarrasY * (baseHormigonDimensiones.AnchoY + 0.5);
+
+            var diametrosBarras = (baseHormigon.DiametroBarrasX.Valor, baseHormigon.DiametroBarrasY.Valor);
+
+            var areasBarrasIndividuales = (Math.PI * Math.Pow(diametrosBarras.Item1, 2) / 4, Math.PI * Math.Pow(diametrosBarras.Item2, 2) / 4);
+
+            var pesoBarrasX = longitudBarrasX * areasBarrasIndividuales.Item1 * 7850;
+            var pesoBarrasY = longitudBarrasY * areasBarrasIndividuales.Item2 * 7850;
+
+            var volumenExcavacion = volumenHormigon * baseHormigon.CoeficienteEsponjamiento.Valor;
+
+            var costoHormigon = volumenHormigon * baseHormigon.CostoM3Hormigon.Valor;
+            var costoAcero = (pesoBarrasX + pesoBarrasY) * baseHormigon.CostoKgAcero.Valor;
+            var costoExcavacion = volumenExcavacion * baseHormigon.CostoM3Excavacion.Valor;
+
+            var baseHormigonComputo = new BaseHormigonComputo()
+            {
+                VolumenHormigon = volumenHormigon,
+                LongitudBarrasX = longitudBarrasX,
+                LongitudBarrasY = longitudBarrasY,
+                PesoBarrasX = pesoBarrasX,
+                PesoBarrasY = pesoBarrasY,
+                VolumenExcavacion = volumenExcavacion,
+                MontoHormigon = costoHormigon,
+                MontoAcero = costoAcero,
+                MontoExcavacion = costoExcavacion
+            };
+
+            return baseHormigonComputo;
         }
     }
 }

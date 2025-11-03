@@ -23,5 +23,9 @@
         public ValueUnitPair MomentoX { get; set; }
         public ValueUnitPair MomentoY { get; set; }
         public ValueUnitPair ModuloBalasto { get; set; }
+        public ValueUnitPair CostoM3Hormigon { get; set; }
+        public ValueUnitPair CostoKgAcero { get; set; }
+        public ValueUnitPair CostoM3Excavacion { get; set; }
+        public ValueUnitPair CoeficienteEsponjamiento { get; set; }
     }
 }

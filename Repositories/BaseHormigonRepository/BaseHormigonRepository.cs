@@ -80,6 +80,22 @@ namespace CalculoBasesAIE.Repositories.BaseHormigonRepository
             existingEntity.DiametroBarrasY.Unidad = baseHormigon.DiametroBarrasY.Unidad;
             existingEntity.DiametroBarrasY.Tipo = baseHormigon.DiametroBarrasY.Tipo;
 
+            existingEntity.CostoM3Hormigon.Valor = baseHormigon.CostoM3Hormigon.Valor;
+            existingEntity.CostoM3Hormigon.Unidad = baseHormigon.CostoM3Hormigon.Unidad;
+            existingEntity.CostoM3Hormigon.Tipo = baseHormigon.CostoM3Hormigon.Tipo;
+
+            existingEntity.CostoM3Excavacion.Valor = baseHormigon.CostoM3Excavacion.Valor;
+            existingEntity.CostoM3Excavacion.Unidad = baseHormigon.CostoM3Excavacion.Unidad;
+            existingEntity.CostoM3Excavacion.Tipo = baseHormigon.CostoM3Excavacion.Tipo;
+
+            existingEntity.CostoKgAcero.Valor = baseHormigon.CostoKgAcero.Valor;
+            existingEntity.CostoKgAcero.Unidad = baseHormigon.CostoKgAcero.Unidad;
+            existingEntity.CostoKgAcero.Tipo = baseHormigon.CostoKgAcero.Tipo;
+
+            existingEntity.CoeficienteEsponjamiento.Valor = baseHormigon.CoeficienteEsponjamiento.Valor;
+            existingEntity.CoeficienteEsponjamiento.Unidad = baseHormigon.CoeficienteEsponjamiento.Unidad;
+            existingEntity.CoeficienteEsponjamiento.Tipo = baseHormigon.CoeficienteEsponjamiento.Tipo;
+
             await context.SaveChangesAsync();
         }
 
@@ -113,7 +129,11 @@ namespace CalculoBasesAIE.Repositories.BaseHormigonRepository
                 e.CorteY.Valor == baseHormigon.CorteY.Valor &&
                 e.MomentoX.Valor == baseHormigon.MomentoX.Valor &&
                 e.MomentoY.Valor == baseHormigon.MomentoY.Valor &&
-                e.ModuloBalasto.Valor == baseHormigon.ModuloBalasto.Valor
+                e.ModuloBalasto.Valor == baseHormigon.ModuloBalasto.Valor &&
+                e.CostoKgAcero.Valor == baseHormigon.CostoKgAcero.Valor &&
+                e.CostoM3Excavacion.Valor == baseHormigon.CostoM3Excavacion.Valor &&
+                e.CostoM3Hormigon.Valor == baseHormigon.CostoM3Hormigon.Valor &&
+                e.CoeficienteEsponjamiento.Valor == baseHormigon.CoeficienteEsponjamiento.Valor
             );
         }
     }
