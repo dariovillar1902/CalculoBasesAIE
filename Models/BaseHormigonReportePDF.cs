@@ -1,16 +1,22 @@
 ﻿using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using System;
 
 namespace CalculoBasesAIE.Models
 {
     public class BaseHormigonReportePDF(
+        string nombreFundacion,
+        string? empresaUsuario,
         BaseHormigonDimensiones dimensiones,
+        BaseHormigonEsfuerzos esfuerzos,
+        BaseHormigonVerificaciones verificaciones,
         BaseHormigonCuantia cuantia,
         BaseHormigonArmadura armadura,
         BaseHormigonVerificacionPunzonado punzonado,
         BaseHormigonVerificacionCorte corte,
-        bool verificaTension) : IDocument
+        BaseHormigonComputo computo
+    ) : IDocument
     {
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
 
@@ -21,85 +27,137 @@ namespace CalculoBasesAIE.Models
                 page.Margin(30);
                 page.Size(PageSizes.A4);
                 page.PageColor(Colors.White);
-                page.DefaultTextStyle(x => x.FontSize(12));
+                page.DefaultTextStyle(x => x.FontSize(11));
 
-                page.Header().Text("Informe de Base de Hormigón")
-                             .SemiBold().FontSize(18).AlignCenter();
-
-                page.Content().PaddingVertical(10).Column(col =>
+                // ---------- HEADER / RÓTULO ----------
+                page.Header().Border(1).Padding(8).Column(col =>
                 {
-                    col.Spacing(8);
+                    col.Spacing(4);
 
-                    col.Item().Text("Datos Geométricos").Bold();
-                    col.Item().Table(t =>
+                    col.Item().Row(row =>
                     {
-                        t.ColumnsDefinition(c => c.ConstantColumn(200));
+                        row.RelativeItem().Text("Cálculo Base de Hormigón").FontSize(18).SemiBold();
+                        row.ConstantItem(120).Border(1).Height(50).AlignCenter()
+                           .AlignMiddle().Text(empresaUsuario ?? "Profesional / Empresa");
+                    });
 
+                    col.Item().Row(row =>
+                    {
+                        row.RelativeItem().Text($"Nombre: {nombreFundacion}");
+                        row.ConstantItem(120).Text($"Fecha: {DateTime.Today:dd/MM/yyyy}");
+                    });
+                });
+
+                // ---------- CONTENT ----------
+                // ---------- CONTENT ----------
+                page.Content().PaddingVertical(12).Column(col =>
+                {
+                    col.Spacing(14);
+
+                    Section(col, "Datos Geométricos", t =>
+                    {
                         AddRow(t, "Área", dimensiones.Area.ToString("0.00"), "m²");
                         AddRow(t, "Ancho X", dimensiones.AnchoX.ToString("0.00"), "m");
                         AddRow(t, "Ancho Y", dimensiones.AnchoY.ToString("0.00"), "m");
                         AddRow(t, "Altura", dimensiones.Altura.ToString("0.00"), "m");
-                        AddRow(t, "Verifica Vuelos", dimensiones.VerificaVuelos ? "Sí" : "No");
                     });
 
-                    col.Item().Text("Verificación de Tensión Admisible").Bold();
-                    col.Item().Text(verificaTension ? "Cumple" : "No cumple");
-
-                    col.Item().Text("Cálculo de Cuantía").Bold();
-                    col.Item().Table(t =>
+                    Section(col, "Esfuerzos Actuantes", t =>
                     {
-                        t.ColumnsDefinition(c => c.ConstantColumn(250));
+                        AddRow(t, "Normal N", esfuerzos.Normal.ToString("0.00"), "kN");
+                        AddRow(t, "Momento X", esfuerzos.MomentoX.ToString("0.00"), "kN·m");
+                        AddRow(t, "Momento Y", esfuerzos.MomentoY.ToString("0.00"), "kN·m");
+                        AddRow(t, "Corte X", esfuerzos.CorteX.ToString("0.00"), "kN");
+                        AddRow(t, "Corte Y", esfuerzos.CorteY.ToString("0.00"), "kN");
+                    });
+
+                    Section(col, "Verificaciones Globales", t =>
+                    {
+                        AddRow(t, "Coef. Seguridad Vuelco", verificaciones.CoeficienteSeguridadVuelco.ToString("0.00"));
+                        AddRow(t, "Verifica Vuelco", verificaciones.VerificaVuelco ? "Sí ✓" : "No ✗");
+                        AddRow(t, "Excentricidad X", verificaciones.ExcentricidadX.ToString("0.00"), "m");
+                        AddRow(t, "Excentricidad Y", verificaciones.ExcentricidadY.ToString("0.00"), "m");
+                        AddRow(t, "Tensión Máx X", verificaciones.TensionMaximaX.ToString("0.00"), "kg/cm²");
+                        AddRow(t, "Tensión Mín X", verificaciones.TensionMinimaX.ToString("0.00"), "kg/cm²");
+                        AddRow(t, "Tensión Máx Y", verificaciones.TensionMaximaY.ToString("0.00"), "kg/cm²");
+                        AddRow(t, "Tensión Mín Y", verificaciones.TensionMinimaY.ToString("0.00"), "kg/cm²");
+                        AddRow(t, "Verifica Tensión Admisible", verificaciones.VerificaTensionAdmisible ? "Sí ✓" : "No ✗");
+                        AddRow(t, "Asentamiento Medio", verificaciones.AsentamientoMedio.ToString("0.00"), "cm");
+                        AddRow(t, "Asentamiento Máximo", verificaciones.AsentamientoMaximo.ToString("0.00"), "cm");
+                        AddRow(t, "Asentamiento Mínimo", verificaciones.AsentamientoMinimo.ToString("0.00"), "cm");
+                        AddRow(t, "Distorsión Angular", verificaciones.DistorsionAngular.ToString("0.000"));
+                        AddRow(t, "Verifica Asentamiento Medio", verificaciones.VerificaAsentamientoMedio ? "Sí ✓" : "No ✗");
+                        AddRow(t, "Verifica Asentamiento Diferencial", verificaciones.VerificaAsentamientoDiferencial ? "Sí ✓" : "No ✗");
+                    });
+
+                    Section(col, "Cálculo de Cuantía", t =>
+                    {
                         AddRow(t, "Esfuerzo Axial Mayorado", cuantia.EsfuerzoAxilMayorado.ToString("0.00"), "kN");
-                        AddRow(t, "Carga Mayorada", cuantia.CargaMayorada.ToString("0.00"), "kN/m²");
                         AddRow(t, "Momento Mayorado X", cuantia.MomentoMayoradoX.ToString("0.00"), "kN·m");
                         AddRow(t, "Momento Mayorado Y", cuantia.MomentoMayoradoY.ToString("0.00"), "kN·m");
                         AddRow(t, "Área Acero X", cuantia.AreaAceroX.ToString("0.00"), "cm²");
                         AddRow(t, "Área Acero Y", cuantia.AreaAceroY.ToString("0.00"), "cm²");
                     });
 
-                    col.Item().Text("Verificación de Punzonado").Bold();
-                    col.Item().Table(t =>
+                    Section(col, "Verificación de Punzonado", t =>
                     {
-                        t.ColumnsDefinition(c => c.ConstantColumn(250));
-                        AddRow(t, "Carga Total", punzonado.CargaTotal.ToString("0.00"), "kN/m²");
                         AddRow(t, "Resistencia Requerida", punzonado.ResistenciaRequerida.ToString("0.00"), "kN");
-                        AddRow(t, "Perímetro Crítico", punzonado.B0.ToString("0.00"), "m");
-                        AddRow(t, "Relación Geométrica", punzonado.B.ToString("0.00"));
-                        AddRow(t, "Resistencia Nominal", punzonado.ResistenciaNominal.ToString("0.00"), "kN");
                         AddRow(t, "Resistencia de Diseño", punzonado.ResistenciaDiseno.ToString("0.00"), "kN");
-                        AddRow(t, "Resultado", punzonado.CumpleVerificacion ? "Cumple" : "No cumple");
+                        AddRow(t, "Resultado", punzonado.CumpleVerificacion ? "Cumple ✓" : "No cumple ✗");
                     });
 
-                    col.Item().Text("Verificación de Corte").Bold();
-                    col.Item().Table(t =>
+                    Section(col, "Verificación de Corte", t =>
                     {
-                        t.ColumnsDefinition(c => c.ConstantColumn(250));
-                        AddRow(t, "Carga Total", corte.CargaTotal.ToString("0.00"), "kN/m²");
-                        AddRow(t, "Resistencia Requerida en X", corte.ResistenciaRequeridaX.ToString("0.00"), "kN");
-                        AddRow(t, "Resistencia Requerida en Y", corte.ResistenciaRequeridaY.ToString("0.00"), "kN");
-                        AddRow(t, "Resistencia Nominal en X", corte.ResistenciaNominalX.ToString("0.00"), "kN");
-                        AddRow(t, "Resistencia Nominal en Y", corte.ResistenciaNominalY.ToString("0.00"), "kN");
-                        AddRow(t, "Resistencia de Diseño en X", corte.ResistenciaDisenoX.ToString("0.00"), "kN");
-                        AddRow(t, "Resistencia de Diseño en Y", corte.ResistenciaDisenoY.ToString("0.00"), "kN");
-                        AddRow(t, "Resultado", corte.CumpleVerificacion ? "Cumple" : "No cumple");
+                        AddRow(t, "Resistencia Requerida X", corte.ResistenciaRequeridaX.ToString("0.00"), "kN");
+                        AddRow(t, "Resistencia Requerida Y", corte.ResistenciaRequeridaY.ToString("0.00"), "kN");
+                        AddRow(t, "Resistencia Diseño X", corte.ResistenciaDisenoX.ToString("0.00"), "kN");
+                        AddRow(t, "Resistencia Diseño Y", corte.ResistenciaDisenoY.ToString("0.00"), "kN");
+                        AddRow(t, "Resultado", corte.CumpleVerificacion ? "Cumple ✓" : "No cumple ✗");
                     });
 
-                    col.Item().Text("Detalles de Armadura").Bold();
-                    col.Item().Table(t =>
+                    Section(col, "Detalles de Armadura", t =>
                     {
-                        t.ColumnsDefinition(c => c.ConstantColumn(250));
                         AddRow(t, "Barras en X", armadura.CantidadBarrasX.ToString());
                         AddRow(t, "Barras en Y", armadura.CantidadBarrasY.ToString());
-                        AddRow(t, "Separación Barras X", armadura.SeparacionBarrasX.ToString("0.00"), "cm");
-                        AddRow(t, "Separación Barras Y", armadura.SeparacionBarrasY.ToString("0.00"), "cm");
+                        AddRow(t, "Separación X", armadura.SeparacionBarrasX.ToString("0.00"), "cm");
+                        AddRow(t, "Separación Y", armadura.SeparacionBarrasY.ToString("0.00"), "cm");
+                    });
+
+                    Section(col, "Cómputo de Materiales", t =>
+                    {
+                        AddRow(t, "Volumen de Hormigón", computo.VolumenHormigon.ToString("0.00"), "m³");
+                        AddRow(t, "Peso Acero X", computo.PesoBarrasX.ToString("0.00"), "kg");
+                        AddRow(t, "Peso Acero Y", computo.PesoBarrasY.ToString("0.00"), "kg");
+                        AddRow(t, "Volumen Excavación", computo.VolumenExcavacion.ToString("0.00"), "m³");
+                        AddRow(t, "Costo Hormigón", computo.MontoHormigon.ToString("0.00"), "$");
+                        AddRow(t, "Costo Acero", computo.MontoAcero.ToString("0.00"), "$");
+                        AddRow(t, "Costo Excavación", computo.MontoExcavacion.ToString("0.00"), "$");
                     });
                 });
 
-                page.Footer().AlignCenter().Text("Documento generado automáticamente · Copilot").FontSize(9);
+
+                // ---------- FOOTER ----------
+                page.Footer().AlignCenter()
+                    .Text("Realizado con app Cálculo Bases AIE · https://link-pendiente")
+                    .FontSize(9).Italic().FontColor(Colors.Grey.Darken1);
             });
         }
 
-        private void AddRow(TableDescriptor t, string title, string value, string? unit = null)
+        private static void Section(ColumnDescriptor col, string title, Action<TableDescriptor> table)
+        {
+            col.Item().PaddingBottom(4).Text(title).SemiBold().FontSize(13).Underline();
+            col.Item().Table(t =>
+            {
+                t.ColumnsDefinition(c =>
+                {
+                    c.RelativeColumn(1);
+                    c.RelativeColumn(1.2f);
+                });
+                table(t);
+            });
+        }
+
+        private static void AddRow(TableDescriptor t, string title, string value, string? unit = null)
         {
             t.Cell().Text(title);
             t.Cell().Text(unit != null ? $"{value} {unit}" : value);
