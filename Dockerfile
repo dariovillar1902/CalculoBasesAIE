@@ -2,16 +2,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copiar solución y proyectos
-COPY CalculoBasesAIE.sln ./
+# Copiar el proyecto principal
 COPY CalculoBasesAIE/ ./CalculoBasesAIE/
-COPY CalculoBasesAIE.Tests/ ./CalculoBasesAIE.Tests/
 
 # Restaurar dependencias
-RUN dotnet restore
-
-# Publicar solo el proyecto principal
 WORKDIR /src/CalculoBasesAIE
+RUN dotnet restore CalculoBasesAIE.csproj
+
+# Publicar la aplicación
 RUN dotnet publish -c Release -o /app/publish
 
 # Etapa 2: Runtime
