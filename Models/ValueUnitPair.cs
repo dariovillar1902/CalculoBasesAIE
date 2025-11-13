@@ -1,10 +1,13 @@
-﻿namespace CalculoBasesAIE.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace CalculoBasesAIE.Models
 {
+    [Owned]
     public class ValueUnitPair
     {
         public double Valor { get; set; }
-        public string Unidad { get; set; }
-        public string Tipo { get; set; }
+        public string Unidad { get; set; } = string.Empty;
+        public string Tipo { get; set; } = string.Empty;
     }
 
     public class ValueUnitPairCsv

@@ -14,35 +14,40 @@ namespace CalculoBasesAIE.Models
         public DbSet<BaseHormigonVerificacionCorte> BasesHormigonVerificacionCorte { get; set; }
         public DbSet<BaseHormigonVerificacionPunzonado> BasesHormigonVerificacionPunzonado { get; set; }
         public DbSet<BaseHormigonComputo> BasesHormigonComputos { get; set; }
+        public DbSet<TestEntity> TestEntities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<BaseHormigon>()
-                .HasKey(b => b.Id);
-
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.EsfuerzoAxil);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.PorcentajeCargaD);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.PorcentajeCargaL);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.AnchoColumnaX);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.AnchoColumnaY);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CargaAdmisible);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.PesoEspecificoSuelo);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.NivelFundacion);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.PesoEspecificoHormigon);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.ResistenciaCaracteristicaHormigon);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.RecubrimientoHormigon);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.TensionFluenciaAcero);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.DiametroBarrasX);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.DiametroBarrasY);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.MomentoX);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.MomentoY);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CorteX);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CorteY);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.ModuloBalasto);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CostoM3Hormigon);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CostoKgAcero);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CostoM3Excavacion);
-            modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CoeficienteEsponjamiento);
+            modelBuilder.Entity<TestEntity>().HasKey(t => t.Id);
         }
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    modelBuilder.Entity<BaseHormigon>()
+        //        .HasKey(b => b.Id);
+
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.EsfuerzoAxil);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.PorcentajeCargaD);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.PorcentajeCargaL);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.AnchoColumnaX);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.AnchoColumnaY);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CargaAdmisible);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.PesoEspecificoSuelo);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.NivelFundacion);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.PesoEspecificoHormigon);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.ResistenciaCaracteristicaHormigon);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.RecubrimientoHormigon);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.TensionFluenciaAcero);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.DiametroBarrasX);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.DiametroBarrasY);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.MomentoX);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.MomentoY);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CorteX);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CorteY);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.ModuloBalasto);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CostoM3Hormigon);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CostoKgAcero);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CostoM3Excavacion);
+        //    modelBuilder.Entity<BaseHormigon>().OwnsOne(b => b.CoeficienteEsponjamiento);
+        //}
     }
 }
