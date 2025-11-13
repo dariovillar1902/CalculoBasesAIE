@@ -16,6 +16,14 @@ builder.Services.AddCors(options =>
                     .AllowAnyHeader());
 });
 
+string ConvertDatabaseUrlToConnectionString(string databaseUrl)
+{
+    var uri = new Uri(databaseUrl);
+    var userInfo = uri.UserInfo.Split(':');
+
+    return $"Host={uri.Host};Port={uri.Port};Username={userInfo[0]};Password={userInfo[1]};Database={uri.AbsolutePath.TrimStart('/')};SSL Mode=Require;Trust Server Certificate=true";
+}
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<IBaseHormigonRepository, BaseHormigonRepository>();
@@ -23,8 +31,11 @@ builder.Services.AddScoped<IBaseHormigonService, BaseHormigonService>();
 builder.Services.AddScoped<IBaseHormigonIOService, BaseHormigonIOService>();
 builder.Services.AddScoped<BaseHormigonService>();
 builder.Services.AddScoped<BaseHormigonIOService>();
+var rawUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+var connectionString = ConvertDatabaseUrlToConnectionString(rawUrl);
+
 builder.Services.AddDbContext<BaseHormigonContext>(options =>
-   options.UseNpgsql(Environment.GetEnvironmentVariable("DATABASE_URL")));
+    options.UseNpgsql(connectionString));
 
 var app = builder.Build();
 
