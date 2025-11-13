@@ -24,7 +24,7 @@ builder.Services.AddScoped<IBaseHormigonIOService, BaseHormigonIOService>();
 builder.Services.AddScoped<BaseHormigonService>();
 builder.Services.AddScoped<BaseHormigonIOService>();
 builder.Services.AddDbContext<BaseHormigonContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+   options.UseNpgsql(Environment.GetEnvironmentVariable("DATABASE_URL")));
 
 var app = builder.Build();
 
