@@ -9,9 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
-        policy => policy.WithOrigins("http://localhost:5173")
-                        .AllowAnyMethod()
-                        .AllowAnyHeader());
+        policy => policy.WithOrigins(
+                        "http://localhost:5173",
+                        "https://calculo-bases-aie.vercel.app")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
 });
 
 builder.Services.AddControllers();
