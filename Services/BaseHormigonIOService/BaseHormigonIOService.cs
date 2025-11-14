@@ -15,9 +15,12 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
     {
         public async Task<byte[]?> GenerateExcelAsync(long baseId)
         {
+            // Se busca la base de hormigón por ID. Si no existe, no se genera nada.
             var baseHormigon = await repository.GetByIdAsync(baseId);
             if (baseHormigon == null) return null;
 
+            // Cálculo de parámetros principales de la base. 
+            // Cada servicio devuelve valores que luego se exportarán.
             var dim = service.EstimarDimensiones(baseHormigon);
             var esfuerzos = service.ObtenerEsfuerzos(baseHormigon, dim);
             var verificaciones = service.VerificarBase(baseHormigon, dim, esfuerzos);
@@ -27,12 +30,14 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
             var corte = service.VerificarCorte(baseHormigon, dim);
             var computo = service.Computo(baseHormigon, dim, armadura);
 
+            // Se crea un nuevo libro de Excel.
             using var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add("BaseHormigon");
 
+            // Información general de la fundación
             worksheet.Cell(1, 1).Value = "Nombre Fundación:";
             worksheet.Cell(1, 2).Value = baseHormigon.Nombre ?? "";
-            worksheet.Cell(1, 1).Style.Font.SetBold();
+            worksheet.Cell(1, 1).Style.Font.SetBold(); // Se marca en negrita para resaltar el título
             worksheet.Cell(1, 2).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Left);
 
             worksheet.Cell(2, 1).Value = "Fecha Exportación:";
@@ -40,12 +45,14 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
             worksheet.Cell(2, 1).Style.Font.SetBold();
 
             worksheet.Cell(3, 1).Value = "Empresa / Profesional:";
-            worksheet.Cell(3, 2).Value = ""; 
+            worksheet.Cell(3, 2).Value = "";
             worksheet.Cell(3, 1).Style.Font.SetBold();
 
             var startRow = 5;
 
-            // Datos geométricos
+            // ============================
+            //     DATOS GEOMÉTRICOS
+            // ============================
             worksheet.Cell(startRow, 1).Value = "Dimensiones de la Base";
             worksheet.Cell(startRow, 1).Style.Font.SetBold();
             startRow++;
@@ -68,11 +75,14 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
 
             startRow += 5;
 
-            // -- Esfuerzos
+            // ============================
+            //          ESFUERZOS
+            // ============================
             worksheet.Cell(startRow, 1).Value = "Esfuerzos en la Base";
             worksheet.Cell(startRow, 1).Style.Font.SetBold();
             startRow++;
 
+            // En esta sección se listan los esfuerzos mecánicos actuantes sobre la base.
             worksheet.Cell(startRow + 0, 1).Value = "Normal";
             worksheet.Cell(startRow + 0, 2).Value = esfuerzos.Normal;
             worksheet.Cell(startRow + 0, 3).Value = "kN";
@@ -95,11 +105,14 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
 
             startRow += 6;
 
-            // Cálculo de cuantía
+            // ============================
+            //      CÁLCULO DE CUANTÍA
+            // ============================
             worksheet.Cell(startRow, 1).Value = "Cálculo de Cuantía";
             worksheet.Cell(startRow, 1).Style.Font.SetBold();
             startRow++;
 
+            // Se exportan valores que sirven para dimensionar la cantidad de acero.
             worksheet.Cell(startRow + 0, 1).Value = "Esfuerzo Axial Mayorado";
             worksheet.Cell(startRow + 0, 2).Value = Math.Round(cuantia.EsfuerzoAxilMayorado, 2);
             worksheet.Cell(startRow + 0, 3).Value = "kN";
@@ -122,11 +135,14 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
 
             startRow += 6;
 
-            // Verificaciónes (general)
+            // ============================
+            //   VERIFICACIONES GENERALES
+            // ============================
             worksheet.Cell(startRow, 1).Value = "Verificaciones generales";
             worksheet.Cell(startRow, 1).Style.Font.SetBold();
             startRow++;
 
+            // Esta sección incluye controles estructurales de estabilidad y tensiones.
             worksheet.Cell(startRow + 0, 1).Value = "Coef. Seguridad Vuelco";
             worksheet.Cell(startRow + 0, 2).Value = verificaciones.CoeficienteSeguridadVuelco;
 
@@ -161,7 +177,7 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
             worksheet.Cell(startRow + 10, 2).Value = verificaciones.VerificaTensionAdmisible ? "Sí" : "No";
 
             worksheet.Cell(startRow + 11, 1).Value = "Asentamiento Medio";
-            worksheet.Cell(startRow + 11, 2).Value = verificaciones.AsentamientoMedio * 1000;
+            worksheet.Cell(startRow + 11, 2).Value = verificaciones.AsentamientoMedio * 1000; // Se pasa a mm
             worksheet.Cell(startRow + 11, 3).Value = "mm";
 
             worksheet.Cell(startRow + 12, 1).Value = "Asentamiento Máximo";
@@ -183,11 +199,14 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
 
             startRow += 18;
 
-            // Verificación de Punzonado
+            // ============================
+            //    VERIFICACIÓN PUNZONADO
+            // ============================
             worksheet.Cell(startRow, 1).Value = "Verificación de Punzonado";
             worksheet.Cell(startRow, 1).Style.Font.SetBold();
             startRow++;
 
+            // Valores relacionados a la resistencia frente al punzonado.
             worksheet.Cell(startRow + 0, 1).Value = "Esfuerzo Axial Mayorado";
             worksheet.Cell(startRow + 0, 2).Value = Math.Round(punzonado.EsfuerzoAxilMayorado, 2);
             worksheet.Cell(startRow + 0, 3).Value = "kN";
@@ -220,7 +239,9 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
 
             startRow += 9;
 
-            // Verificación de Corte
+            // ============================
+            //      VERIFICACIÓN CORTE
+            // ============================
             worksheet.Cell(startRow, 1).Value = "Verificación de Corte";
             worksheet.Cell(startRow, 1).Style.Font.SetBold();
             startRow++;
@@ -258,7 +279,9 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
 
             startRow += 9;
 
-            // Detalles de armadura
+            // ============================
+            //       DETALLES ARMADURA
+            // ============================
             worksheet.Cell(startRow, 1).Value = "Detalles de Armadura";
             worksheet.Cell(startRow, 1).Style.Font.SetBold();
             startRow++;
@@ -279,7 +302,9 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
 
             startRow += 6;
 
-            // Cómputo
+            // ============================
+            //           CÓMPUTO
+            // ============================
             worksheet.Cell(startRow, 1).Value = "Cómputo";
             worksheet.Cell(startRow, 1).Style.Font.SetBold();
             startRow++;
@@ -322,14 +347,16 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
 
             startRow += 9;
 
+            // Pie de página
             var lastRow = startRow + 11;
-            worksheet.Cell(lastRow, 1).Value = "Realizado con app Cálculo Bases AIE · https://link-pendiente";
+            worksheet.Cell(lastRow, 1).Value = "Realizado con app Cálculo Bases AIE · https://calculo-bases-aie.vercel.app/";
             worksheet.Range(lastRow, 1, lastRow, 4).Merge().Style.Font.Italic = true;
 
-            // Some basic formatting
+            // Ajustes finales de formato del Excel
             worksheet.Columns().AdjustToContents();
             worksheet.RangeUsed()?.SetAutoFilter();
 
+            // Se guarda el archivo en memoria y se retorna como byte[]
             using var stream = new MemoryStream();
             workbook.SaveAs(stream);
             return stream.ToArray();
@@ -337,9 +364,11 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
 
         public async Task<byte[]?> GenerateCsvAsync(long baseId)
         {
+            // Obtener la base desde el repositorio
             var baseHormigon = await repository.GetByIdAsync(baseId);
             if (baseHormigon == null) return null;
 
+            // Calcular parámetros necesarios de la base
             var dim = service.EstimarDimensiones(baseHormigon);
             var esfuerzos = service.ObtenerEsfuerzos(baseHormigon, dim);
             var verificaciones = service.VerificarBase(baseHormigon, dim, esfuerzos);
@@ -349,16 +378,19 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
             var corte = service.VerificarCorte(baseHormigon, dim);
             var computo = service.Computo(baseHormigon, dim, armadura);
 
+            // StringBuilder para construir el CSV línea por línea
             var sb = new StringBuilder();
 
-            // Header / rótulo
+            // Encabezado del CSV
             sb.AppendLine($"Nombre Fundación,{baseHormigon.Nombre}");
             sb.AppendLine($"Fecha Exportación,{DateTime.Today:dd/MM/yyyy}");
             sb.AppendLine("Empresa / Profesional,");
             sb.AppendLine();
 
+            // Función auxiliar para agregar filas al CSV con formato y unidades
             void Add(string label, object? value, string? unit = null)
             {
+                // Formateo homogéneo para valores numéricos
                 value = value switch
                 {
                     double d => d.ToString("0.00"),
@@ -366,18 +398,23 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
                     decimal m => m.ToString("0.00"),
                     _ => value
                 };
+
                 sb.AppendLine($"{EscapeCsv(label)},{EscapeCsv(value?.ToString() ?? "")},{EscapeCsv(unit ?? "")}");
             }
 
+            // ============================
+            // Sección: Dimensiones
+            // ============================
             sb.AppendLine("Dimensiones de la Base");
-            // Datos geométricos
             Add("Área", Math.Round(dim.Area, 2), "m²");
             Add("Ancho X", dim.AnchoX, "m");
             Add("Ancho Y", dim.AnchoY, "m");
             Add("Altura", dim.Altura, "m");
             sb.AppendLine();
 
-            // Esfuerzos
+            // ============================
+            // Sección: Esfuerzos actuantes
+            // ============================
             sb.AppendLine("Esfuerzos en la Base");
             Add("Normal", esfuerzos.Normal, "kN");
             Add("Momento X", esfuerzos.MomentoX, "kN·m");
@@ -386,7 +423,9 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
             Add("Corte Y", esfuerzos.CorteY, "kN");
             sb.AppendLine();
 
-            // Verificaciones (general)
+            // ============================
+            // Sección: Verificaciones generales
+            // ============================
             sb.AppendLine("Verificaciones Generales");
             Add("Coef. Seguridad Vuelco", verificaciones.CoeficienteSeguridadVuelco);
             Add("Verifica Vuelco", verificaciones.VerificaVuelco ? "Sí" : "No");
@@ -405,7 +444,9 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
             Add("Verifica Asentamiento Diferencial", verificaciones.VerificaAsentamientoDiferencial ? "Sí" : "No");
             sb.AppendLine();
 
-            // Cuantía
+            // ============================
+            // Sección: Cuantía de acero
+            // ============================
             sb.AppendLine("Cálculo de Cuantía");
             Add("Esfuerzo Axial Mayorado", cuantia.EsfuerzoAxilMayorado, "kN");
             Add("Momento Mayorado X", cuantia.MomentoMayoradoX, "kN·m");
@@ -414,7 +455,9 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
             Add("Área Acero Y", cuantia.AreaAceroY, "cm²");
             sb.AppendLine();
 
-            // Punzonado
+            // ============================
+            // Sección: Punzonado
+            // ============================
             sb.AppendLine("Verificación de Punzonado");
             Add("Esfuerzo Axial Mayorado", punzonado.EsfuerzoAxilMayorado, "kN");
             Add("Carga Total", punzonado.CargaTotal, "kN/m²");
@@ -426,7 +469,9 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
             Add("Verifica Punzonado", punzonado.CumpleVerificacion ? "Sí" : "No");
             sb.AppendLine();
 
-            // Corte
+            // ============================
+            // Sección: Corte
+            // ============================
             sb.AppendLine("Verificación de Corte");
             Add("Carga Total", corte.CargaTotal, "kN/m²");
             Add("Resistencia Requerida en X", corte.ResistenciaRequeridaX, "kN");
@@ -438,7 +483,9 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
             Add("Verifica Corte", corte.CumpleVerificacion ? "Sí" : "No");
             sb.AppendLine();
 
-            // Armadura
+            // ============================
+            // Sección: Armadura distribuida
+            // ============================
             sb.AppendLine("Detalles de Armadura");
             Add("Barras en X", armadura.CantidadBarrasX);
             Add("Barras en Y", armadura.CantidadBarrasY);
@@ -446,7 +493,9 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
             Add("Separación Barras Y", armadura.SeparacionBarrasY, "cm");
             sb.AppendLine();
 
-            // Cómputo
+            // ============================
+            // Sección: Cómputo de materiales y costos
+            // ============================
             sb.AppendLine("Cómputo");
             Add("Volumen Hormigón", computo.VolumenHormigon, "m³");
             Add("Longitud Barras X", computo.LongitudBarrasX, "m");
@@ -459,17 +508,25 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
             Add("Monto Excavación", computo.MontoExcavacion, "$");
             sb.AppendLine();
 
-            // footer
-            sb.AppendLine($"Realizado con app Cálculo Bases AIE,https://link-pendiente");
-            var bytes = Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(sb.ToString())).ToArray();
+            // Pie del CSV
+            sb.AppendLine($"Realizado con app Cálculo Bases AIE,https://calculo-bases-aie.vercel.app/");
+
+            // Codificar en UTF-8 con BOM
+            var bytes = Encoding.UTF8.GetPreamble()
+                .Concat(Encoding.UTF8.GetBytes(sb.ToString()))
+                .ToArray();
+
             return bytes;
         }
 
+
         public async Task<byte[]?> GeneratePdfAsync(long baseId)
         {
+            // Buscar la base por ID. Si no existe, no se genera PDF.
             var baseHormigon = await repository.GetByIdAsync(baseId);
             if (baseHormigon == null) return null;
 
+            // Cálculos principales de la base
             var dim = service.EstimarDimensiones(baseHormigon);
             var esfuerzos = service.ObtenerEsfuerzos(baseHormigon, dim);
             var verificaciones = service.VerificarBase(baseHormigon, dim, esfuerzos);
@@ -479,6 +536,7 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
             var corte = service.VerificarCorte(baseHormigon, dim);
             var computo = service.Computo(baseHormigon, dim, armadura);
 
+            // Crear objeto del reporte PDF con todos los datos calculados
             var pdf = new BaseHormigonReportePDF(
                 baseHormigon.Nombre,
                 null,
@@ -492,6 +550,7 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
                 computo
             );
 
+            // Generar PDF en memoria usando QuestPDF
             using var stream = new MemoryStream();
             QuestPDF.Settings.License = LicenseType.Community;
             pdf.GeneratePdf(stream);
@@ -500,13 +559,16 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
 
         public async Task<BaseHormigon?> ImportBaseHormigonAsync(IFormFile file)
         {
+            // Validación básica
             if (file == null || file.Length == 0)
                 return null;
 
+            // Copiar archivo a memoria para procesamiento
             using var stream = new MemoryStream();
             await file.CopyToAsync(stream);
             stream.Seek(0, SeekOrigin.Begin);
 
+            // Detectar formato según extensión
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
             BaseHormigon? baseHormigon = extension switch
             {
@@ -518,15 +580,20 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
             if (baseHormigon == null)
                 return null;
 
+            // Convertir unidades a sistema interno
             service.ConvertirUnidades(baseHormigon);
+
+            // Detectar si ya existe un registro igual en la base
             var baseHormigonExistente = await repository.GetDuplicateAsync(baseHormigon);
 
             if (baseHormigonExistente != null)
             {
+                // Si existe, devolver la instancia original
                 return baseHormigonExistente;
             }
             else
             {
+                // Si no existe, guardar en la base de datos
                 await repository.AddAsync(baseHormigon);
                 return baseHormigon;
             }
@@ -534,6 +601,7 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
 
         public BaseHormigon ParseBaseHormigonFromCsv(Stream stream)
         {
+            // Leer CSV con CsvHelper
             using var reader = new StreamReader(stream);
             using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
             {
@@ -542,9 +610,11 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
                 Delimiter = ";"
             });
 
+            // Convertir CSV en lista de registros
             var records = csv.GetRecords<ValueUnitPairCsv>().ToList();
             var dict = new Dictionary<string, string>();
 
+            // Construir diccionario clave → "valor|unidad"
             foreach (var record in records)
             {
                 if (!string.IsNullOrEmpty(record.Variable) && !string.IsNullOrEmpty(record.Valor))
@@ -553,38 +623,68 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
                 }
             }
 
+            // Reusar lógica común para convertir datos al modelo
             return ParseBaseHormigonFromDictionary(dict);
         }
 
         public BaseHormigon ParseBaseHormigonFromExcel(Stream stream)
         {
+            // Abrir el archivo Excel usando ClosedXML
             using var workbook = new XLWorkbook(stream);
             var worksheet = workbook.Worksheet(1);
             var dict = new Dictionary<string, string>();
 
+            // Leer filas (saltando cabecera)
             foreach (var row in worksheet.RowsUsed().Skip(1))
             {
                 var key = row.Cell(1).GetString().Trim();
                 var value = row.Cell(2).GetString().Trim();
                 var unit = row.Cell(3).GetString().Trim();
 
+                // Agregar al diccionario clave → "valor|unidad"
                 if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
                     dict[key] = $"{value}|{unit}";
             }
 
+            // Reusar lógica común para crear el modelo
             return ParseBaseHormigonFromDictionary(dict);
         }
 
+        /// <summary>
+        /// Convierte el diccionario proveniente de CSV a un objeto <see cref="BaseHormigon"/>.
+        /// Cada entrada del diccionario tiene el formato:
+        ///     "Clave" => "valor|unidad"
+        /// Este método:
+        ///     - Parsea el valor numérico.
+        ///     - Recupera la unidad (si existe).
+        ///     - Asigna el "tipo" (fuerza, longitud, etc.) según se indique.
+        ///     - Maneja claves opcionales y valores ausentes sin generar errores.
+        /// </summary>
+        /// <param name="dict">Diccionario con los datos parseados del CSV</param>
+        /// <returns>Instancia completa de <see cref="BaseHormigon"/> generada a partir del CSV.</returns>
         private static BaseHormigon ParseBaseHormigonFromDictionary(Dictionary<string, string> dict)
         {
+            // ------------------------------------------------------------
+            // Función auxiliar: intenta convertir un string a double.
+            // Usa Cultura Invariante para evitar problemas con comas/puntos.
+            // Si no puede parsear, devuelve 0 para evitar excepciones.
+            // ------------------------------------------------------------
             double ParseDouble(string value)
                 => double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var v) ? v : 0;
 
+            // ------------------------------------------------------------
+            // Función auxiliar: obtiene un valor tipo ValueUnitPair desde el diccionario.
+            // Formato esperado: "valor|unidad"
+            // Retorna null si la clave no existe o el valor está vacío.
+            // 'tipo' es el tipo semántico (fuerza, longitud, etc.).
+            // ------------------------------------------------------------
             ValueUnitPair? TryParse(string key, string tipo)
             {
                 if (!dict.TryGetValue(key, out var raw)) return null;
 
                 var parts = raw.Split('|');
+
+                // Si no hay valor o el primer segmento está vacío, no se carga la propiedad.
                 if (parts.Length == 0 || string.IsNullOrWhiteSpace(parts[0])) return null;
 
                 return new ValueUnitPair
@@ -595,12 +695,26 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
                 };
             }
 
+            // ------------------------------------------------------------
+            // Función auxiliar para campos puramente textuales.
+            // Extrae únicamente la parte antes del '|', ignorando la unidad.
+            // ------------------------------------------------------------
             string TryParseString(string key)
                 => dict.TryGetValue(key, out var value) ? value.Split('|')[0] : "";
 
+            // ------------------------------------------------------------
+            // Construcción del objeto BaseHormigon
+            // Se incluyen:
+            //   - Campos básicos
+            //   - Campos opcionales (dependen de la versión del template CSV)
+            //   - Valores de costo y parámetros complementarios
+            // Cada campo faltante queda en null sin romper la deserialización.
+            // ------------------------------------------------------------
             return new BaseHormigon
             {
-                // Basic section
+                // ---------------------------------------
+                // Sección básica
+                // ---------------------------------------
                 Nombre = TryParseString("Nombre"),
                 EsfuerzoAxil = TryParse("Esfuerzo Axial", "fuerza"),
                 CargaAdmisible = TryParse("Carga Admisible", "presion"),
@@ -610,7 +724,9 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
                 MomentoY = TryParse("Momento Y", "momento"),
                 ModuloBalasto = TryParse("Modulo de Balasto", "presion"),
 
-                // Secondary (may not exist depending on template version)
+                // ---------------------------------------
+                // Sección secundaria (opcional)
+                // ---------------------------------------
                 PorcentajeCargaD = TryParse("Porcentaje Carga Muerta", "porcentaje"),
                 PorcentajeCargaL = TryParse("Porcentaje Carga Viva", "porcentaje"),
                 AnchoColumnaX = TryParse("Ancho Columna X", "longitud"),
@@ -624,7 +740,9 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
                 DiametroBarrasX = TryParse("Diametro Barras X", "longitud"),
                 DiametroBarrasY = TryParse("Diametro Barras Y", "longitud"),
 
-                // Cost & computation section (optional)
+                // ---------------------------------------
+                // Costos y otros parámetros opcionales
+                // ---------------------------------------
                 CostoM3Hormigon = TryParse("Costo m³ Hormigón", "costo"),
                 CostoKgAcero = TryParse("Costo kg Acero", "costo"),
                 CostoM3Excavacion = TryParse("Costo m³ Excavación", "costo"),
@@ -632,13 +750,26 @@ namespace CalculoBasesAIE.Services.BaseHormigonIOService
             };
         }
 
+        /// <summary>
+        /// Escapa un valor para que sea compatible con CSV.
+        /// - Pone comillas cuando hay caracteres conflictivos.
+        /// - Duplica las comillas internas según el estándar RFC4180.
+        /// </summary>
+        /// <param name="input">Texto a escapar</param>
+        /// <returns>Texto escapado listo para ser incluido en CSV</returns>
         private static string EscapeCsv(string input)
         {
             if (string.IsNullOrEmpty(input)) return "";
+
+            // Determina si necesita comillas: comas, comillas o saltos de línea.
             var needsQuotes = input.Contains(',') || input.Contains('"') || input.Contains('\n') || input.Contains('\r');
             if (!needsQuotes) return input;
+
+            // Duplicar comillas internas para cumplir el estándar CSV.
             var escaped = input.Replace("\"", "\"\"");
+
             return $"\"{escaped}\"";
         }
+
     }
 }

@@ -138,7 +138,7 @@ namespace CalculoBasesAIE.Models
 
                 // ---------- FOOTER ----------
                 page.Footer().AlignCenter()
-                    .Text("Realizado con app Cálculo Bases AIE · https://link-pendiente")
+                    .Text("Realizado con app Cálculo Bases AIE · https://calculo-bases-aie.vercel.app/")
                     .FontSize(9).Italic().FontColor(Colors.Grey.Darken1);
             });
         }

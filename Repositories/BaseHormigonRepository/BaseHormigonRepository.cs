@@ -3,25 +3,42 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CalculoBasesAIE.Repositories.BaseHormigonRepository
 {
+    // Repositorio encargado de realizar todas las operaciones CRUD
+    // sobre la entidad BaseHormigon usando Entity Framework Core.
     public class BaseHormigonRepository(BaseHormigonContext context) : IBaseHormigonRepository
     {
+        // ============================================================
+        // Obtiene todas las bases registradas en la base de datos.
+        // ============================================================
         public Task<List<BaseHormigon>> GetAllAsync() =>
             context.BasesHormigon.ToListAsync();
 
+        // ============================================================
+        // Busca una base por su ID. Devuelve null si no existe.
+        // ============================================================
         public Task<BaseHormigon?> GetByIdAsync(long id) =>
             context.BasesHormigon.FindAsync(id).AsTask();
 
+        // ============================================================
+        // Agrega una nueva base a la base de datos.
+        // ============================================================
         public async Task AddAsync(BaseHormigon baseHormigon)
         {
             context.BasesHormigon.Add(baseHormigon);
             await context.SaveChangesAsync();
         }
 
+        // ============================================================
+        // Actualiza una base existente campo por campo.
+        // Copia las propiedades del objeto recibido a la entidad encontrada.
+        // No reemplaza la entidad completa para evitar conflictos de tracking.
+        // ============================================================
         public async Task UpdateAsync(BaseHormigon baseHormigon)
         {
             var existingEntity = await context.BasesHormigon.FindAsync(baseHormigon.Id);
             if (existingEntity is null) return;
 
+            // Actualiza solo los valores relevantes
             existingEntity.Nombre = baseHormigon.Nombre;
 
             existingEntity.EsfuerzoAxil.Valor = baseHormigon.EsfuerzoAxil.Valor;
@@ -99,15 +116,27 @@ namespace CalculoBasesAIE.Repositories.BaseHormigonRepository
             await context.SaveChangesAsync();
         }
 
+        // ============================================================
+        // Elimina una base existente de la base de datos.
+        // ============================================================
         public async Task DeleteAsync(BaseHormigon baseHormigon)
         {
             context.BasesHormigon.Remove(baseHormigon);
             await context.SaveChangesAsync();
         }
 
+        // ============================================================
+        // Verifica si existe una base con un ID determinado.
+        // ============================================================
         public Task<bool> ExistsAsync(long id) =>
             context.BasesHormigon.AnyAsync(e => e.Id == id);
 
+        // ============================================================
+        // Busca una base que tenga exactamente los mismos valores
+        // que otra (para evitar duplicados).
+        //
+        // NOTA: solo compara valores numéricos, no unidades ni tipos.
+        // ============================================================
         public async Task<BaseHormigon?> GetDuplicateAsync(BaseHormigon baseHormigon)
         {
             return await context.BasesHormigon.FirstOrDefaultAsync(e =>
@@ -125,7 +154,7 @@ namespace CalculoBasesAIE.Repositories.BaseHormigonRepository
                 e.DiametroBarrasX.Valor == baseHormigon.DiametroBarrasX.Valor &&
                 e.DiametroBarrasY.Valor == baseHormigon.DiametroBarrasY.Valor &&
                 e.RecubrimientoHormigon.Valor == baseHormigon.RecubrimientoHormigon.Valor &&
-                e.CorteX.Valor == baseHormigon.CorteX.Valor && 
+                e.CorteX.Valor == baseHormigon.CorteX.Valor &&
                 e.CorteY.Valor == baseHormigon.CorteY.Valor &&
                 e.MomentoX.Valor == baseHormigon.MomentoX.Valor &&
                 e.MomentoY.Valor == baseHormigon.MomentoY.Valor &&
