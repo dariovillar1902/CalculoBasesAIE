@@ -24,16 +24,18 @@ namespace CalculoBasesAIE.Models
         {
             container.Page(page =>
             {
+                // Configuración general de la página
                 page.Margin(30);
                 page.Size(PageSizes.A4);
                 page.PageColor(Colors.White);
                 page.DefaultTextStyle(x => x.FontSize(11));
 
-                // ---------- HEADER / RÓTULO ----------
+                // ---------- HEADER ----------
                 page.Header().Border(1).Padding(8).Column(col =>
                 {
                     col.Spacing(4);
 
+                    // Fila superior: título y empresa
                     col.Item().Row(row =>
                     {
                         row.RelativeItem().Text("Cálculo Base de Hormigón").FontSize(18).SemiBold();
@@ -41,6 +43,7 @@ namespace CalculoBasesAIE.Models
                            .AlignMiddle().Text(empresaUsuario ?? "Profesional / Empresa");
                     });
 
+                    // Fila inferior: nombre fundación y fecha
                     col.Item().Row(row =>
                     {
                         row.RelativeItem().Text($"Nombre: {nombreFundacion}");
@@ -48,12 +51,12 @@ namespace CalculoBasesAIE.Models
                     });
                 });
 
-                // ---------- CONTENT ----------
-                // ---------- CONTENT ----------
+                // ---------- CONTENIDO ----------
                 page.Content().PaddingVertical(12).Column(col =>
                 {
                     col.Spacing(14);
 
+                    // Cada sección se renderiza llamando a Section con su propio Column
                     Section(col, "Datos Geométricos", t =>
                     {
                         AddRow(t, "Área", dimensiones.Area.ToString("0.00"), "m²");
@@ -135,7 +138,6 @@ namespace CalculoBasesAIE.Models
                     });
                 });
 
-
                 // ---------- FOOTER ----------
                 page.Footer().AlignCenter()
                     .Text("Realizado con app Cálculo Bases AIE · https://calculo-bases-aie.vercel.app/")
@@ -143,20 +145,27 @@ namespace CalculoBasesAIE.Models
             });
         }
 
+        // ---------- MÉTODO PARA SECCIONES ----------
         private static void Section(ColumnDescriptor col, string title, Action<TableDescriptor> table)
         {
+            // Título de la sección
             col.Item().PaddingBottom(4).Text(title).SemiBold().FontSize(13).Underline();
+
+            // Tabla de dos columnas
             col.Item().Table(t =>
             {
                 t.ColumnsDefinition(c =>
                 {
-                    c.RelativeColumn(1);
-                    c.RelativeColumn(1.2f);
+                    c.RelativeColumn(1);   // Columna 1
+                    c.RelativeColumn(1.2f); // Columna 2
                 });
+
+                // Llamamos al delegate que agrega filas
                 table(t);
             });
         }
 
+        // ---------- MÉTODO PARA FILAS DE TABLA ----------
         private static void AddRow(TableDescriptor t, string title, string value, string? unit = null)
         {
             t.Cell().Text(title);
