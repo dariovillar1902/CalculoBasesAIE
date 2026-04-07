@@ -18,13 +18,14 @@ builder.Services.AddCors(options =>
                     .AllowAnyHeader());
 });
 
-// Conversi髇 de DATABASE_URL a cadena de conexi髇 PostgreSQL
+// Conversi贸n de DATABASE_URL a cadena de conexi贸n PostgreSQL
 static string ConvertDatabaseUrlToConnectionString(string databaseUrl)
 {
     var uri = new Uri(databaseUrl);
     var userInfo = uri.UserInfo.Split(':');
+    var port = uri.Port == -1 ? 5432 : uri.Port;
 
-    return $"Host={uri.Host};Port={uri.Port};Username={userInfo[0]};Password={userInfo[1]};Database={uri.AbsolutePath.TrimStart('/')};SSL Mode=Require;Trust Server Certificate=true";
+    return $"Host={uri.Host};Port={port};Username={userInfo[0]};Password={userInfo[1]};Database={uri.AbsolutePath.TrimStart('/')};SSL Mode=Require;Trust Server Certificate=true";
 }
 
 // Servicios
@@ -41,9 +42,9 @@ builder.Services.AddScoped<IBaseHormigonIOService, BaseHormigonIOService>();
 builder.Services.AddScoped<BaseHormigonService>();
 builder.Services.AddScoped<BaseHormigonIOService>();
 
-// Configuraci髇 de DbContext
+// Configuraci贸n de DbContext
 var rawUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-var connectionString = ConvertDatabaseUrlToConnectionString(rawUrl);
+var connectionString = ConvertDatabaseUrlToConnectionString(rawUrl!);
 
 builder.Services.AddDbContext<BaseHormigonContext>(options =>
     options.UseNpgsql(connectionString));
@@ -65,7 +66,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
-// Migraci髇 autom醫ica
+// Migraci贸n autom谩tica
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<BaseHormigonContext>();
