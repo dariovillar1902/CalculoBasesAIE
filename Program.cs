@@ -51,6 +51,11 @@ builder.Services.AddDbContext<BaseHormigonContext>(options =>
 
 var app = builder.Build();
 
+// CORS va primero: garantiza que los headers estén presentes incluso en respuestas de error (500, 400, etc.)
+// Render maneja HTTPS en el load balancer; la app solo recibe HTTP internamente,
+// por lo que UseHttpsRedirection fue removido para evitar redirects que eliminan headers CORS.
+app.UseCors("AllowFrontend");
+
 // Swagger solo en desarrollo
 if (app.Environment.IsDevelopment())
 {
@@ -61,8 +66,6 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseCors("AllowFrontend");
-app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
