@@ -348,8 +348,8 @@ namespace CalculoBasesAIE.Services.BaseHormigonService
                 // Cálculo del coeficiente de seguridad frente al vuelco
                 // Se toma el mínimo entre los dos ejes
                 CoeficienteSeguridadVuelco = Math.Min(
-                    (baseHormigonEsfuerzos.Normal * baseHormigonDimensiones.AnchoX) / (2 * baseHormigonEsfuerzos.MomentoX),
-                    (baseHormigonEsfuerzos.Normal * baseHormigonDimensiones.AnchoY) / (2 * baseHormigonEsfuerzos.MomentoY)
+                    baseHormigonEsfuerzos.MomentoX == 0 ? 999 : (baseHormigonEsfuerzos.Normal * baseHormigonDimensiones.AnchoX) / (2 * baseHormigonEsfuerzos.MomentoX),
+                    baseHormigonEsfuerzos.MomentoY == 0 ? 999 : (baseHormigonEsfuerzos.Normal * baseHormigonDimensiones.AnchoY) / (2 * baseHormigonEsfuerzos.MomentoY)
                 )
             };
 
