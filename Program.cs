@@ -18,16 +18,6 @@ builder.Services.AddCors(options =>
                     .AllowAnyHeader());
 });
 
-// Conversión de DATABASE_URL a cadena de conexión PostgreSQL
-static string ConvertDatabaseUrlToConnectionString(string databaseUrl)
-{
-    var uri = new Uri(databaseUrl);
-    var userInfo = uri.UserInfo.Split(':');
-    var port = uri.Port == -1 ? 5432 : uri.Port;
-
-    return $"Host={uri.Host};Port={port};Username={userInfo[0]};Password={userInfo[1]};Database={uri.AbsolutePath.TrimStart('/')};SSL Mode=Require;Trust Server Certificate=true";
-}
-
 // Servicios
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -43,11 +33,11 @@ builder.Services.AddScoped<BaseHormigonService>();
 builder.Services.AddScoped<BaseHormigonIOService>();
 
 // Configuración de DbContext
-var rawUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-var connectionString = ConvertDatabaseUrlToConnectionString(rawUrl!);
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL")
+    ?? throw new InvalidOperationException("DATABASE_URL environment variable is not set.");
 
 builder.Services.AddDbContext<BaseHormigonContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(databaseUrl));
 
 var app = builder.Build();
 
