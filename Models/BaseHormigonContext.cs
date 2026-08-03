@@ -18,6 +18,7 @@ namespace CalculoBasesAIE.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasDefaultSchema("CalculoBasesAIE");
             modelBuilder.Entity<TestEntity>().HasKey(t => t.Id);
         }
         //protected override void OnModelCreating(ModelBuilder modelBuilder)

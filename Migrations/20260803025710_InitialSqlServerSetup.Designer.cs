@@ -2,27 +2,28 @@
 using CalculoBasesAIE.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace CalculoBasesAIE.Migrations
 {
     [DbContext(typeof(BaseHormigonContext))]
-    [Migration("20251113033230_InitialPostgresSetup")]
-    partial class InitialPostgresSetup
+    [Migration("20260803025710_InitialSqlServerSetup")]
+    partial class InitialSqlServerSetup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("CalculoBasesAIE")
                 .HasAnnotation("ProductVersion", "8.0.4")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigon", b =>
                 {
@@ -30,15 +31,15 @@ namespace CalculoBasesAIE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigon");
+                    b.ToTable("BasesHormigon", "CalculoBasesAIE");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonArmadura", b =>
@@ -47,23 +48,23 @@ namespace CalculoBasesAIE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<double>("CantidadBarrasX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("CantidadBarrasY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("SeparacionBarrasX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("SeparacionBarrasY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonArmaduras");
+                    b.ToTable("BasesHormigonArmaduras", "CalculoBasesAIE");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonComputo", b =>
@@ -72,38 +73,38 @@ namespace CalculoBasesAIE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<double>("LongitudBarrasX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("LongitudBarrasY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("MontoAcero")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("MontoExcavacion")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("MontoHormigon")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("PesoBarrasX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("PesoBarrasY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("VolumenExcavacion")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("VolumenHormigon")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonComputos");
+                    b.ToTable("BasesHormigonComputos", "CalculoBasesAIE");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonCuantia", b =>
@@ -112,68 +113,68 @@ namespace CalculoBasesAIE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<double>("AreaAceroX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("AreaAceroY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("CargaMayorada")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("CuantiaAdoptadaX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("CuantiaAdoptadaY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("CuantiaCalculoX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("CuantiaCalculoY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("CuantiaMaxima")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("CuantiaMecanicaX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("CuantiaMecanicaY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("CuantiaMinima")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("EsfuerzoAxilMayorado")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("FactorAdimensionalX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("FactorAdimensionalY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("MomentoMayoradoX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("MomentoMayoradoY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("MomentoNominalX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("MomentoNominalY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<bool>("VerificaCuantiaMaxima")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonCuantias");
+                    b.ToTable("BasesHormigonCuantias", "CalculoBasesAIE");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonDiametrosBarras", b =>
@@ -182,17 +183,17 @@ namespace CalculoBasesAIE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<double>("DiametroX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("DiametroY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonDiametrosBarras");
+                    b.ToTable("BasesHormigonDiametrosBarras", "CalculoBasesAIE");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonDimensiones", b =>
@@ -201,32 +202,32 @@ namespace CalculoBasesAIE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<double>("Altura")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("AnchoX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("AnchoY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("Area")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<bool>("VerificaVuelos")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<double>("VueloX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("VueloY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonDimensiones");
+                    b.ToTable("BasesHormigonDimensiones", "CalculoBasesAIE");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonEsfuerzos", b =>
@@ -235,26 +236,26 @@ namespace CalculoBasesAIE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<double>("CorteX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("CorteY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("MomentoX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("MomentoY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("Normal")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonEsfuerzos");
+                    b.ToTable("BasesHormigonEsfuerzos", "CalculoBasesAIE");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonVerificacionCorte", b =>
@@ -263,35 +264,35 @@ namespace CalculoBasesAIE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<double>("CargaTotal")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<bool>("CumpleVerificacion")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<double>("ResistenciaDisenoX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("ResistenciaDisenoY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("ResistenciaNominalX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("ResistenciaNominalY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("ResistenciaRequeridaX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("ResistenciaRequeridaY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonVerificacionCorte");
+                    b.ToTable("BasesHormigonVerificacionCorte", "CalculoBasesAIE");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonVerificacionPunzonado", b =>
@@ -300,35 +301,35 @@ namespace CalculoBasesAIE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<double>("B")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("B0")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("CargaTotal")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<bool>("CumpleVerificacion")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<double>("EsfuerzoAxilMayorado")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("ResistenciaDiseno")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("ResistenciaNominal")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("ResistenciaRequerida")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonVerificacionPunzonado");
+                    b.ToTable("BasesHormigonVerificacionPunzonado", "CalculoBasesAIE");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigonVerificaciones", b =>
@@ -337,79 +338,79 @@ namespace CalculoBasesAIE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<double>("AsentamientoMaximo")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("AsentamientoMedio")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("AsentamientoMinimo")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("CoeficienteSeguridadDeslizamiento")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("CoeficienteSeguridadVuelco")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("DistorsionAngular")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("ExcentricidadX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("ExcentricidadY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("TensionMaximaX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("TensionMaximaY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("TensionMinimaX")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<double>("TensionMinimaY")
-                        .HasColumnType("double precision");
+                        .HasColumnType("float");
 
                     b.Property<bool>("VerificaAsentamientoDiferencial")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("VerificaAsentamientoMedio")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("VerificaDeslizamiento")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("VerificaTensionAdmisible")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("VerificaVuelco")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
-                    b.ToTable("BasesHormigonVerificaciones");
+                    b.ToTable("BasesHormigonVerificaciones", "CalculoBasesAIE");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.TestEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("TestEntities");
+                    b.ToTable("TestEntities", "CalculoBasesAIE");
                 });
 
             modelBuilder.Entity("CalculoBasesAIE.Models.BaseHormigon", b =>
@@ -421,18 +422,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -445,18 +446,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -469,18 +470,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -493,18 +494,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -517,18 +518,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -541,18 +542,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -565,18 +566,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -589,18 +590,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -613,18 +614,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -637,18 +638,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -661,18 +662,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -685,18 +686,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -709,18 +710,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -733,18 +734,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -757,18 +758,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -781,18 +782,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -805,18 +806,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -829,18 +830,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -853,18 +854,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -877,18 +878,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -901,18 +902,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -925,18 +926,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");
@@ -949,18 +950,18 @@ namespace CalculoBasesAIE.Migrations
 
                             b1.Property<string>("Tipo")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Unidad")
                                 .IsRequired()
-                                .HasColumnType("text");
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<double>("Valor")
-                                .HasColumnType("double precision");
+                                .HasColumnType("float");
 
                             b1.HasKey("BaseHormigonId");
 
-                            b1.ToTable("BasesHormigon");
+                            b1.ToTable("BasesHormigon", "CalculoBasesAIE");
 
                             b1.WithOwner()
                                 .HasForeignKey("BaseHormigonId");

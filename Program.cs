@@ -33,16 +33,12 @@ builder.Services.AddScoped<BaseHormigonService>();
 builder.Services.AddScoped<BaseHormigonIOService>();
 
 // Configuración de DbContext
-var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL")
-    ?? throw new InvalidOperationException("DATABASE_URL environment variable is not set.");
-
-var uri = new Uri(databaseUrl);
-var userInfo = uri.UserInfo.Split(':');
-var port = uri.Port == -1 ? 5432 : uri.Port;
-var connectionString = $"Host={uri.Host};Port={port};Username={userInfo[0]};Password={userInfo[1]};Database={uri.AbsolutePath.TrimStart('/')};SSL Mode=Require;Trust Server Certificate=true";
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("No database connection string configured (DATABASE_URL or ConnectionStrings:DefaultConnection).");
 
 builder.Services.AddDbContext<BaseHormigonContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseSqlServer(connectionString));
 
 var app = builder.Build();
 

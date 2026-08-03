@@ -9,23 +9,14 @@ namespace CalculoBasesAIE
     {
         public BaseHormigonContext CreateDbContext(string[] args)
         {
-            // Obtenemos la URL de la base de datos desde la variable de entorno DATABASE_URL
-            // Si no existe, usamos una URL local por defecto
-            var rawUrl = Environment.GetEnvironmentVariable("DATABASE_URL")
-                         ?? "postgresql://postgres:password@localhost:5432/railway";
-
-            // Convertimos la URL en un objeto Uri para extraer host, puerto y credenciales
-            var uri = new Uri(rawUrl);
-
-            // Obtenemos usuario y contraseña a partir del UserInfo de la URI
-            var userInfo = uri.UserInfo.Split(':');
-
-            // Construimos la cadena de conexión para Npgsql (PostgreSQL)
-            var connStr = $"Host={uri.Host};Port={uri.Port};Username={userInfo[0]};Password={userInfo[1]};Database={uri.AbsolutePath.TrimStart('/')};SSL Mode=Require;Trust Server Certificate=true";
+            // Obtenemos la cadena de conexión desde la variable de entorno DATABASE_URL
+            // Si no existe, usamos una conexión local por defecto (SQL Server LocalDB/Express)
+            var connStr = Environment.GetEnvironmentVariable("DATABASE_URL")
+                         ?? "Server=MSI\\SQLEXPRESS;Database=CalculoBasesDB;Trusted_Connection=True;Encrypt=False;MultipleActiveResultSets=true";
 
             // Configuramos las opciones del DbContext con la cadena de conexión
             var optionsBuilder = new DbContextOptionsBuilder<BaseHormigonContext>();
-            optionsBuilder.UseNpgsql(connStr);
+            optionsBuilder.UseSqlServer(connStr);
 
             // Retornamos una instancia del DbContext con la configuración indicada
             return new BaseHormigonContext(optionsBuilder.Options);
